@@ -33,6 +33,7 @@ The `TEMPLATE_VERSION` variable in the [sandboxed JavaScript](src/template.js) s
 To release a new version:
 
 - Run the `build` command to update the [generated template](./template.tpl)
+- Run the `release` command to create a commit for it, and update `metadata.yml` file with the commit SHA.
 - Update the [changelog](CHANGELOG.md) manually
 - Commit it to GitHub
 
