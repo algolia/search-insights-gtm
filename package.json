@@ -5,7 +5,7 @@
   "main": "generated/search-insights.tpl",
   "repository": "algolia/search-insights.js",
   "author": "Algolia <support@algolia.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "node scripts/build.js",
     "dev": "nodemon scripts/build.js",
