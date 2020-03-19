@@ -1,308 +1,47 @@
-# Search Insights
+# Search Insights for Google Tag Manager (GTM)
 
-[![Build Status](https://travis-ci.org/algolia/search-insights.js.svg?branch=master)](https://travis-ci.org/algolia/search-insights.js)
-[![npm version](https://badge.fury.io/js/search-insights.svg)](https://badge.fury.io/js/search-insights)
+Google Tag Manager connector for Algolia Search Insights.
 
-Search Insights lets you report click, conversion and view metrics using the [Algolia Insights API](https://www.algolia.com/doc/rest-api/insights/#overview).
+## Documentation
 
-## Table of Contents
-
-<!-- toc -->
-
-- [Getting started](#getting-started)
-  - [Browser](#browser)
-  - [Node.js](#nodejs)
-- [Use cases](#use-cases)
-  - [Search (Click Analytics and A/B testing)](#search-click-analytics-and-ab-testing)
-  - [Personalization](#personalization)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
-
-<!-- tocstop -->
-
-## Getting started
-
-
-> Are you using Google Tag Manager in your app? We provide a [custom template](gtm) to ease the integration.
-
-
-### Browser
-
-#### 1. Load the library
-
-The Search Insights library can be either loaded via [jsDelivr CDN](https://www.jsdelivr.com/) or directly bundled with your application.
-We recommend loading the library by adding the snippet below to all pages where you wish to track search analytics.
-
-<!-- prettier-ignore-start -->
-```html
-<script>
-var ALGOLIA_INSIGHTS_SRC = "https://cdn.jsdelivr.net/npm/search-insights@1.4.0";
-
-!function(e,a,t,n,s,i,c){e.AlgoliaAnalyticsObject=s,e[s]=e[s]||function(){
-(e[s].queue=e[s].queue||[]).push(arguments)},i=a.createElement(t),c=a.getElementsByTagName(t)[0],
-i.async=1,i.src=n,c.parentNode.insertBefore(i,c)
-}(window,document,"script",ALGOLIA_INSIGHTS_SRC,"aa");
-</script>
-```
-<!-- prettier-ignore-end -->
-
-#### 2. Initialize the library
-
-```js
-aa('init', {
-  appId: 'APP_ID',
-  apiKey: 'SEARCH_API_KEY',
-});
-
-// Optional: set the analytics user ID
-aa('setUserToken', 'USER_ID');
-```
-
-| Option            | Type           | Default                  | Description                                    |
-| ----------------- | -------------- | ------------------------ | ---------------------------------------------- |
-| **`appId`**       | `string`       | None (required)          | The identifier of your Algolia application     |
-| **`apiKey`**      | `string`       | None (required)          | The search API key of your Algolia application |
-| `userHasOptedOut` | `boolean`      | `false`                  | Whether to exclude users from analytics        |
-| `region`          | `'de' \| 'us'` | Automatic                | The DNS server to target                       |
-| `cookieDuration`  | `number`       | `15552000000` (6 months) | The cookie duration in milliseconds            |
-
-### Node.js
-
-_(Node.js `>= 8.16.0` required)_
-
-#### 1. Install the library
-
-Insights library can be used on the backend as a Node.js module.
-
-```bash
-npm install search-insights
-# or
-yarn add search-insights
-```
-
-#### 2. Initialize the library
-
-```js
-const aa = require('search-insights');
-
-aa('init', {
-  appId: 'APPLICATION_ID',
-  apiKey: 'SEARCH_API_KEY'
-});
-```
-
-#### Add `userToken`
-
-On the Node.js environment, unlike the browser environment, `userToken` must be specified when sending any event.
-
-```js
-aa('clickedObjectIDs', {
-  userToken: 'USER_ID',
-  // ...
-});
-```
-
-## Use cases
-
-The Search Insights library supports both [Search](https://www.algolia.com/doc/guides/getting-insights-and-analytics/search-analytics/out-of-the-box-analytics/) and [Personalization](https://www.algolia.com/doc/guides/getting-insights-and-analytics/personalization/personalization/) Algolia features.
-
-### Search (Click Analytics and A/B testing)
-
-#### Initialize
-
-To enable click analytics, the search parameter [`clickAnalytics`](https://www.algolia.com/doc/api-reference/api-parameters/clickAnalytics/) must be set to `true`. This tells the Algolia engine to return a `queryID` on each search request.
-
-```js
-const searchClient = algoliasearch('APPLICATION_ID', 'SEARCH_API_KEY');
-const search = instantsearch({
-  indexName: 'INDEX_NAME',
-  searchClient,
-  searchParameters: {
-    clickAnalytics: true,
-  },
-});
-
-function getQueryID() {
-  return search.helper.lastResults.queryID;
-}
-```
-
-#### Report a click event
-
-```js
-aa('clickedObjectIDsAfterSearch', {
-  index: 'INDEX_NAME',
-  eventName: 'Click item',
-  queryID: getQueryID(),
-  objectIDs: ['object1'],
-  positions: [42],
-});
-```
-
-| Option      | Type       | Description                                                                                         |
-| ----------- | ---------- | --------------------------------------------------------------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event                                                          |
-| `eventName` | `string`   | The name of the event                                                                               |
-| `objectIDs` | `string[]` | The list of IDs of the result that was clicked                                                      |
-| `positions` | `number[]` | The list of the absolute positions of the HTML element that was clicked (1-based and _not_ 0-based) |
-| `queryID`   | `string`   | The `queryID` of the search sent from Algolia                                                       |
-
-#### Report a conversion event
-
-```js
-aa('convertedObjectIDsAfterSearch', {
-  index: 'INDEX_NAME',
-  eventName: 'Add to basket',
-  queryID: getQueryID(),
-  objectIDs: ['object1'],
-});
-```
-
-| Option      | Type       | Description                                    |
-| ----------- | ---------- | ---------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event     |
-| `eventName` | `string`   | The name of the event                          |
-| `objectIDs` | `string[]` | The list of IDs of the result that was clicked |
-| `queryID`   | `string`   | The `queryID` of the search sent from Algolia  |
-
-### Personalization
-
-#### Initialize
-
-To enable personalization, the search parameter [`enablePersonalization`](https://www.algolia.com/doc/api-reference/api-parameters/enablePersonalization/) must be set to `true`.
-
-```js
-const searchClient = algoliasearch('APPLICATION_ID', 'SEARCH_API_KEY');
-const search = instantsearch({
-  indexName: 'INDEX_NAME',
-  searchClient,
-  searchParameters: {
-    enablePersonalization: true,
-  },
-});
-```
-
-#### Access `userToken`
-
-In cases where the `userToken` is generated, you need a way to access the `userToken` so that you can pass it to the `searchClient`.
-
-```js
-const searchClient = algoliasearch('APPLICATION_ID', 'SEARCH_API_KEY');
-
-aa('getUserToken', null, (err, userToken) => {
-  // for algoliasearch v3.x
-  searchClient.setExtraHeader('X-Algolia-UserToken', userToken);
-
-  // for algoliasearch v4.x
-  searchClient.transporter.headers['X-Algolia-UserToken'] = userToken;
-});
-```
-
-#### Report a click event
-
-```js
-aa('clickedObjectIDs', {
-  index: 'INDEX_NAME',
-  eventName: 'Add to basket',
-  objectIDs: ['object1'],
-});
-```
-
-| Option      | Type       | Description                                    |
-| ----------- | ---------- | ---------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event     |
-| `eventName` | `string`   | The name of the event                          |
-| `objectIDs` | `string[]` | The list of IDs of the result that was clicked |
-
-```js
-aa('clickedFilters', {
-  index: 'INDEX_NAME',
-  eventName: 'Filter on facet',
-  filters: ['brand:Apple'],
-});
-```
-
-| Option      | Type       | Description                                                      |
-| ----------- | ---------- | ---------------------------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event                       |
-| `eventName` | `string`   | The name of the event                                            |
-| `filters`   | `string[]` | The list of filters that was clicked as `'${attr}${op}${value}'` |
-
-#### Report a conversion event
-
-```js
-aa('convertedObjectIDs', {
-  index: 'INDEX_NAME',
-  eventName: 'Add to basket',
-  objectIDs: ['object1'],
-});
-```
-
-| Option      | Type       | Description                                    |
-| ----------- | ---------- | ---------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event     |
-| `eventName` | `string`   | The name of the event                          |
-| `objectIDs` | `string[]` | The list of IDs of the result that was clicked |
-
-```js
-aa('convertedFilters', {
-  index: 'INDEX_NAME',
-  eventName: 'Filter on facet',
-  filters: ['brand:Apple'],
-});
-```
-
-| Option      | Type       | Description                                                      |
-| ----------- | ---------- | ---------------------------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event                       |
-| `eventName` | `string`   | The name of the event                                            |
-| `filters`   | `string[]` | The list of filters that was clicked as `'${attr}${op}${value}'` |
-
-#### Report a view event
-
-```js
-aa('viewedObjectIDs', {
-  index: 'INDEX_NAME',
-  eventName: 'Add to basket',
-  objectIDs: ['object1'],
-});
-```
-
-| Option      | Type       | Description                                    |
-| ----------- | ---------- | ---------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event     |
-| `eventName` | `string`   | The name of the event                          |
-| `objectIDs` | `string[]` | The list of IDs of the result that was clicked |
-
-```js
-aa('viewedFilters', {
-  index: 'INDEX_NAME',
-  eventName: 'Filter on facet',
-  filters: ['brand:Apple'],
-});
-```
-
-| Option      | Type       | Description                                                      |
-| ----------- | ---------- | ---------------------------------------------------------------- |
-| `index`     | `string`   | The name of the index related to the event                       |
-| `eventName` | `string`   | The name of the event                                            |
-| `filters`   | `string[]` | The list of filters that was clicked as `'${attr}${op}${value}'` |
-
-## Examples
-
-The following examples assume that the Search Insights library is loaded.
-
-- [InstantSearch.js](https://github.com/algolia/search-insights.js/blob/master/examples/INSTANTSEARCH.md)
-- [AlgoliaSearch Helper](https://github.com/algolia/search-insights.js/blob/master/examples/HELPER.md)
+Head over our [**Getting Insights and Analytics / Google Tag Manager**](https://www.algolia.com/doc/guides/getting-insights-and-analytics/connectors/google-tag-manager/) documentation.
 
 ## Contributing
 
-To run the examples and the code, you need to run two separate commands:
+Before working on the project, make sure to **disable any ad blockers**.
 
-- `yarn dev` runs webpack and the Node.js server
-- `yarn build:dev` runs Rollup in watch mode
+### Folder structure
+
+The source for the GTM template is in the [`src/`](src) folder and gets generated in the [`generated/`](generated) folder.
+
+### Commands
+
+#### `build`
+
+> Builds the GTM template into the [`generated/`](generated) folder.
+
+Each section of the custom template is in the [`src/`](src) folder. This command compiles the files into a GTM template in [`generated/`](generated).
+
+#### `dev`
+
+> Runs the [`build`](#build) command in watch mode.
+
+### Releasing
+
+The `TEMPLATE_VERSION` variable in the [sandboxed JavaScript](src/template.js) should be incremented for each change. This variable is used to send usage metrics to Algolia.
+
+To release a new version:
+
+- Run the `build` command to update the [generated template](generated/search-insights.tpl)
+- Update the [changelog](CHANGELOG.md) manually
+- Commit it to GitHub
+
+For users to update the template, they need to download it again and to reimport it in the GTM interface (they won't lose their configuration).
+
+## Credits
+
+Thanks to [David Vallejo](https://www.thyngster.com/) for his initial work on the custom template.
 
 ## License
 
-Search Insights is [MIT licensed](LICENSE.md).
+MIT
