@@ -6,6 +6,7 @@ const ROOT_DIR = path.resolve('src');
 const DIST_PATH = path.resolve(mainPath);
 
 async function build() {
+  const tosContent = await fs.readFile(path.join(ROOT_DIR, 'terms-of-service.txt'));
   const infoContent = await fs.readFile(path.join(ROOT_DIR, 'info.json'));
   const templateParametersContent = await fs.readFile(
     path.join(ROOT_DIR, 'template-parameters.json')
@@ -18,6 +19,8 @@ async function build() {
   );
 
   const templateContent = [
+    '___TERMS_OF_SERVICE___',
+    tosContent,
     '___INFO___',
     infoContent,
     '___TEMPLATE_PARAMETERS___',
