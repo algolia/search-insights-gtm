@@ -2,18 +2,21 @@
   "name": "search-insights-gtm",
   "description": "Library for detecting front-end Algolia search metrics",
   "private": true,
-  "main": "generated/search-insights.tpl",
-  "repository": "algolia/search-insights.js",
+  "main": "template.tpl",
+  "repository": "algolia/search-insights-gtm",
   "author": "Algolia <support@algolia.com>",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "build": "node scripts/build.js",
+    "release": "node scripts/release.js",
     "dev": "nodemon scripts/build.js",
     "start": "yarn run dev"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
     "fs-extra": "8.1.0",
-    "nodemon": "1.19.4"
+    "nodemon": "1.19.4",
+    "shelljs": "0.8.3",
+    "yaml": "1.8.2"
   }
 }

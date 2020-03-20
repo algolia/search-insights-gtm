@@ -12,15 +12,15 @@ Before working on the project, make sure to **disable any ad blockers**.
 
 ### Folder structure
 
-The source for the GTM template is in the [`src/`](src) folder and gets generated in the [`generated/`](generated) folder.
+The source for the GTM template is in the [`src/`](src) folder and gets exported to the `./template.tpl` file.
 
 ### Commands
 
 #### `build`
 
-> Builds the GTM template into the [`generated/`](generated) folder.
+> Builds the GTM template into the `./template.tpl` file.
 
-Each section of the custom template is in the [`src/`](src) folder. This command compiles the files into a GTM template in [`generated/`](generated).
+Each section of the custom template is in the [`src/`](src) folder. This command compiles the files into a GTM template.
 
 #### `dev`
 
@@ -32,7 +32,9 @@ The `TEMPLATE_VERSION` variable in the [sandboxed JavaScript](src/template.js) s
 
 To release a new version:
 
-- Run the `build` command to update the [generated template](generated/search-insights.tpl)
+- Run the `build` command to update the [generated template](./template.tpl)
+- Commit the change
+- Run the `release` command to update `metadata.yml` file with the commit SHA.
 - Update the [changelog](CHANGELOG.md) manually
 - Commit it to GitHub
 

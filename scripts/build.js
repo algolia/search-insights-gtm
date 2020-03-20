@@ -4,7 +4,6 @@ const { main: mainPath } = require('../package.json');
 
 const ROOT_DIR = path.resolve('src');
 const DIST_PATH = path.resolve(mainPath);
-const DIST_DIR = path.dirname(DIST_PATH);
 
 async function build() {
   const infoContent = await fs.readFile(path.join(ROOT_DIR, 'info.json'));
