@@ -33,7 +33,7 @@ function commitMetadata() {
 
 function main() {
   const { title, hash } = getLatestCommit();
-  updateMetadata(title, hash);
+  updateMetadata({ title, hash });
   commitMetadata();
 }
 
