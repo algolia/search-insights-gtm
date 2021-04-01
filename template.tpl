@@ -34,7 +34,7 @@ ___TEMPLATE_PARAMETERS___
     "macrosInSelect": false,
     "selectItems": [
       {
-        "displayValue": "Init",
+        "displayValue": "Initialization",
         "value": "init"
       },
       {
@@ -73,7 +73,7 @@ ___TEMPLATE_PARAMETERS___
   },
   {
     "displayName": "Method Details",
-    "name": "Method Labels Group",
+    "name": "MethodLabelsGroup",
     "groupStyle": "NO_ZIPPY",
     "type": "GROUP",
     "subParams": [
@@ -195,7 +195,7 @@ ___TEMPLATE_PARAMETERS___
         "paramValue": "init"
       }
     ],
-    "name": "Init Options",
+    "name": "InitOptions",
     "displayName": "Init Options",
     "groupStyle": "NO_ZIPPY",
     "type": "GROUP",
@@ -225,7 +225,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "displayName": "Advanced init options",
-    "name": "Advanced init options",
+    "name": "AdvancedInitOptions",
     "groupStyle": "ZIPPY_CLOSED",
     "type": "GROUP",
     "subParams": [
@@ -310,7 +310,7 @@ ___TEMPLATE_PARAMETERS___
         "paramValue": "init"
       }
     ],
-    "name": "Event options",
+    "name": "EventOptions",
     "displayName": "Event Options",
     "groupStyle": "ZIPPY_OPEN",
     "type": "GROUP",
@@ -655,7 +655,7 @@ const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 
-const TEMPLATE_VERSION = '1.0.1';
+const TEMPLATE_VERSION = '1.0.2';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const aa = createArgumentsQueue('aa', 'aa.queue');
 

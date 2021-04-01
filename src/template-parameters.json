@@ -7,7 +7,7 @@
     "macrosInSelect": false,
     "selectItems": [
       {
-        "displayValue": "Init",
+        "displayValue": "Initialization",
         "value": "init"
       },
       {
@@ -46,7 +46,7 @@
   },
   {
     "displayName": "Method Details",
-    "name": "Method Labels Group",
+    "name": "MethodLabelsGroup",
     "groupStyle": "NO_ZIPPY",
     "type": "GROUP",
     "subParams": [
@@ -168,7 +168,7 @@
         "paramValue": "init"
       }
     ],
-    "name": "Init Options",
+    "name": "InitOptions",
     "displayName": "Init Options",
     "groupStyle": "NO_ZIPPY",
     "type": "GROUP",
@@ -198,7 +198,7 @@
       }
     ],
     "displayName": "Advanced init options",
-    "name": "Advanced init options",
+    "name": "AdvancedInitOptions",
     "groupStyle": "ZIPPY_CLOSED",
     "type": "GROUP",
     "subParams": [
@@ -283,7 +283,7 @@
         "paramValue": "init"
       }
     ],
-    "name": "Event options",
+    "name": "EventOptions",
     "displayName": "Event Options",
     "groupStyle": "ZIPPY_OPEN",
     "type": "GROUP",
