@@ -241,6 +241,25 @@
         ]
       },
       {
+        "displayName": "Use Cookie",
+        "name": "useCookie",
+        "help": "Whether to use cookies. True by default. When set to false, make to define a User token and manually persist & retrieve it the browser",
+        "type": "SELECT",
+        "macrosInSelect": true,
+        "simpleValueType": true,
+        "notSetText": "",
+        "selectItems": [
+          {
+            "displayValue": "False",
+            "value": false
+          },
+          {
+            "displayValue": "True",
+            "value": true
+          }
+        ]
+      },
+      {
         "displayName": "Cookie Duration",
         "name": "cookieDuration",
         "help": "The cookie duration in milliseconds (default to `15552000000`, 6 months).",
