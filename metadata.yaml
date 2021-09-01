@@ -1,6 +1,8 @@
 homepage: https://www.algolia.com
 documentation: https://github.com/algolia/search-insights-gtm
 versions:
+  - sha: 16ba3414aa9a12ea555cb0a5fea00c400f9934f0
+    changeNotes: fix:changing regex to allow 0 in the queryID
   - sha: ad7f475b8ac1f3d3364be4bd3d2e72d4a4d512ee
     changeNotes: "fix(groupNames): looks like those names cannot have spaces (#4)"
   - sha: 84f59041da3e8fded75b7f5904ff88fbdd486055

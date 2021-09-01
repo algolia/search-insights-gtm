@@ -396,7 +396,7 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT",
         "valueValidators": [
           {
-            "args": ["[a-z1-9]{32}"],
+            "args": ["[a-z0-9]{32}"],
             "type": "REGEX"
           }
         ],
