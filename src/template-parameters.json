@@ -243,7 +243,7 @@
       {
         "displayName": "Use Cookie",
         "name": "useCookie",
-        "help": "Whether to use cookies. True by default. When set to false, make sure to define a User token, manually persist it and retrieve it from the browser",
+        "help": "Whether to use cookies. True by default. When set to false, make sure to define a user token, manually persist it and retrieve it from the browser",
         "type": "SELECT",
         "macrosInSelect": true,
         "simpleValueType": true,
