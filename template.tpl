@@ -268,6 +268,25 @@ ___TEMPLATE_PARAMETERS___
         ]
       },
       {
+        "displayName": "Use Cookie",
+        "name": "useCookie",
+        "help": "Whether to use cookies. True by default. When set to false, make sure to define a User token, manually persist it and retrieve it from the browser",
+        "type": "SELECT",
+        "macrosInSelect": true,
+        "simpleValueType": true,
+        "notSetText": "",
+        "selectItems": [
+          {
+            "displayValue": "False",
+            "value": false
+          },
+          {
+            "displayValue": "True",
+            "value": true
+          }
+        ]
+      },
+      {
         "displayName": "Cookie Duration",
         "name": "cookieDuration",
         "help": "The cookie duration in milliseconds (default to `15552000000`, 6 months).",
@@ -295,7 +314,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "displayName": "Search Insights Source URL",
         "name": "searchInsightsSource",
-        "defaultValue": "https://cdn.jsdelivr.net/npm/search-insights@1.3.1",
+        "defaultValue": "https://cdn.jsdelivr.net/npm/search-insights@1.8.0",
         "help": "The source URL of the Search Insights library.",
         "type": "TEXT",
         "simpleValueType": true
@@ -655,7 +674,7 @@ const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 
-const TEMPLATE_VERSION = '1.0.2';
+const TEMPLATE_VERSION = '1.1.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
@@ -703,6 +722,7 @@ switch (data.method) {
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,
+      useCookie: data.useCookie,
     };
 
     logger(data.method, initOptions);
