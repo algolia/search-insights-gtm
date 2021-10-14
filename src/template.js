@@ -8,6 +8,8 @@ const makeInteger = require('makeInteger');
 
 const TEMPLATE_VERSION = '1.1.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
+const INSIGHTS_LIBRARY_URL =
+  'https://cdn.jsdelivr.net/npm/search-insights@2.0.3';
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
@@ -30,18 +32,18 @@ switch (data.method) {
       break;
     }
 
-    if (queryPermission('inject_script', data.searchInsightsSource)) {
+    if (queryPermission('inject_script', INSIGHTS_LIBRARY_URL)) {
       injectScript(
-        data.searchInsightsSource,
+        INSIGHTS_LIBRARY_URL,
         data.gtmOnSuccess,
         data.gtmOnFailure,
-        data.searchInsightsSource
+        INSIGHTS_LIBRARY_URL
       );
     } else {
       logger(
         'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
           'You need to add the value: "' +
-          data.searchInsightsSource +
+          'https://cdn.jsdelivr.net/npm/search-insights*' +
           '"\n\n' +
           'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
       );
@@ -54,6 +56,7 @@ switch (data.method) {
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,
+      useCookie: data.useCookie === false ? false : true, // true by default
     };
 
     logger(data.method, initOptions);
