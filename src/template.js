@@ -248,5 +248,6 @@ switch (data.method) {
 
   default: {
     logger('You need to set the method for this event.');
+    data.gtmOnFailure();
   }
 }
