@@ -9,7 +9,7 @@ const makeInteger = require('makeInteger');
 const TEMPLATE_VERSION = '1.1.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.0.3';
+  'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
