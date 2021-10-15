@@ -270,7 +270,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "displayName": "Use Cookie",
         "name": "useCookie",
-        "help": "Whether to use cookies. True by default. When set to false, make sure to define a User token, manually persist it and retrieve it from the browser",
+        "help": "Whether to use cookies. True by default. When set to false, make sure to define a user token, manually persist it and retrieve it from the browser",
         "type": "SELECT",
         "macrosInSelect": true,
         "simpleValueType": true,
@@ -291,31 +291,12 @@ ___TEMPLATE_PARAMETERS___
         "name": "cookieDuration",
         "help": "The cookie duration in milliseconds (default to `15552000000`, 6 months).",
         "type": "TEXT",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "type": "POSITIVE_NUMBER"
-          }
-        ]
+        "simpleValueType": true
       },
       {
         "displayName": "User Token",
         "name": "initialUserToken",
         "help": "Set an initial user identifier applied to subsequent events.",
-        "type": "TEXT",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "args": ["^.{1,64}$"],
-            "type": "REGEX"
-          }
-        ]
-      },
-      {
-        "displayName": "Search Insights Source URL",
-        "name": "searchInsightsSource",
-        "defaultValue": "https://cdn.jsdelivr.net/npm/search-insights@1.8.0",
-        "help": "The source URL of the Search Insights library.",
         "type": "TEXT",
         "simpleValueType": true
       }
@@ -339,22 +320,10 @@ ___TEMPLATE_PARAMETERS___
         "name": "userToken",
         "help": "The identifier of the user.",
         "type": "TEXT",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "args": ["^.{1,64}$"],
-            "type": "REGEX"
-          }
-        ]
+        "simpleValueType": true
       },
       {
         "help": "The name of the event.",
-        "valueValidators": [
-          {
-            "args": ["^.{1,64}$"],
-            "type": "REGEX"
-          }
-        ],
         "displayName": "Event Name",
         "simpleValueType": true,
         "name": "eventName",
@@ -373,12 +342,6 @@ ___TEMPLATE_PARAMETERS___
         "help": "The list of object IDs separated by commas (maximum of 20).",
         "simpleValueType": true,
         "type": "TEXT",
-        "valueValidators": [
-          {
-            "args": [1, 20],
-            "type": "TABLE_ROW_COUNT"
-          }
-        ],
         "enablingConditions": [
           {
             "paramName": "method",
@@ -413,12 +376,6 @@ ___TEMPLATE_PARAMETERS___
         "help": "The `queryID` of the search sent from Algolia (<a href=\"https://www.algolia.com/doc/api-reference/api-parameters/clickAnalytics/\">`clickAnalytics`</a> needs to be set)",
         "simpleValueType": true,
         "type": "TEXT",
-        "valueValidators": [
-          {
-            "args": ["[a-z0-9]{32}"],
-            "type": "REGEX"
-          }
-        ],
         "enablingConditions": [
           {
             "paramName": "method",
@@ -674,8 +631,10 @@ const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 
-const TEMPLATE_VERSION = '1.1.0';
+const TEMPLATE_VERSION = '1.2.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
+const INSIGHTS_LIBRARY_URL =
+  'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
@@ -695,26 +654,32 @@ switch (data.method) {
   case 'init': {
     if (isInitialized()) {
       logger('The "init" event has already been called.');
+      data.gtmOnFailure();
       break;
     }
 
-    if (queryPermission('inject_script', data.searchInsightsSource)) {
+    if (queryPermission('inject_script', INSIGHTS_LIBRARY_URL)) {
       injectScript(
-        data.searchInsightsSource,
+        INSIGHTS_LIBRARY_URL,
         data.gtmOnSuccess,
         data.gtmOnFailure,
-        data.searchInsightsSource
+        INSIGHTS_LIBRARY_URL
       );
     } else {
       logger(
         'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
           'You need to add the value: "' +
-          data.searchInsightsSource +
+          'https://cdn.jsdelivr.net/npm/search-insights*' +
           '"\n\n' +
           'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
       );
+      data.gtmOnFailure();
       break;
     }
+
+    log(
+      '[INFO] Algolia GTM template no longer validates event payloads.\nYou can visit https://algolia.com/events/debugger instead.'
+    );
 
     const initOptions = {
       appId: data.appId,
@@ -722,7 +687,7 @@ switch (data.method) {
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,
-      useCookie: data.useCookie,
+      useCookie: data.useCookie === false ? false : true, // true by default
     };
 
     logger(data.method, initOptions);
@@ -745,6 +710,7 @@ switch (data.method) {
   case 'viewedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -757,13 +723,14 @@ switch (data.method) {
 
     logger(data.method, viewedObjectIDsOptions);
     aa(data.method, viewedObjectIDsOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'clickedObjectIDsAfterSearch': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -778,13 +745,14 @@ switch (data.method) {
 
     logger(data.method, clickedObjectIDsAfterSearchOptions);
     aa(data.method, clickedObjectIDsAfterSearchOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'clickedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -798,13 +766,14 @@ switch (data.method) {
 
     logger(data.method, clickedObjectIDsOptions);
     aa(data.method, clickedObjectIDsOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'clickedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -817,13 +786,14 @@ switch (data.method) {
 
     logger(data.method, clickedFiltersOptions);
     aa(data.method, clickedFiltersOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'convertedObjectIDsAfterSearch': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -837,13 +807,14 @@ switch (data.method) {
 
     logger(data.method, convertedObjectIDsAfterSearchOptions);
     aa(data.method, convertedObjectIDsAfterSearchOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'convertedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -856,13 +827,14 @@ switch (data.method) {
 
     logger(data.method, convertedObjectIDsOptions);
     aa(data.method, convertedObjectIDsOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'convertedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -875,13 +847,14 @@ switch (data.method) {
 
     logger(data.method, convertedFiltersOptions);
     aa(data.method, convertedFiltersOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'viewedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -894,11 +867,12 @@ switch (data.method) {
 
     logger(data.method, viewedFiltersOptions);
     aa(data.method, viewedFiltersOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   default: {
     logger('You need to set the method for this event.');
+    data.gtmOnFailure();
   }
 }
