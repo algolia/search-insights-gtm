@@ -35,7 +35,7 @@ To release a new version:
 - Run the `build` command to update the [generated template](./template.tpl)
 - Commit the change (`git commit -m "chore: update version to vx.y.z"`)
 - Run the `release` command to update `metadata.yml` file with the commit SHA.
-- Update the [changelog](CHANGELOG.md) manually
+- Update the [changelog](CHANGELOG.md) manually (and probably `changeNotes` in `metadata.yml` as well)
 - Commit it to GitHub
 
 For users to update the template, they need to download it again and to reimport it in the GTM interface (they won't lose their configuration).

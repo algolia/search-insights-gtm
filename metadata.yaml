@@ -2,7 +2,7 @@ homepage: https://www.algolia.com
 documentation: https://github.com/algolia/search-insights-gtm
 versions:
   - sha: faa43f692e46efd005a726ea68b184620a81d37d
-    changeNotes: "chore: update version to v1.2.0"
+    changeNotes: "upgrade search-insights and remove validations"
   - sha: 0608f26267dae35a6fcc2186d62816928c3563b0
     changeNotes: "feat(Init): allow useCookie parameter for Init method (#6)"
   - sha: 16ba3414aa9a12ea555cb0a5fea00c400f9934f0
