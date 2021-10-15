@@ -8,6 +8,8 @@ const makeInteger = require('makeInteger');
 
 const TEMPLATE_VERSION = '1.1.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
+const INSIGHTS_LIBRARY_URL =
+  'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
@@ -27,26 +29,32 @@ switch (data.method) {
   case 'init': {
     if (isInitialized()) {
       logger('The "init" event has already been called.');
+      data.gtmOnFailure();
       break;
     }
 
-    if (queryPermission('inject_script', data.searchInsightsSource)) {
+    if (queryPermission('inject_script', INSIGHTS_LIBRARY_URL)) {
       injectScript(
-        data.searchInsightsSource,
+        INSIGHTS_LIBRARY_URL,
         data.gtmOnSuccess,
         data.gtmOnFailure,
-        data.searchInsightsSource
+        INSIGHTS_LIBRARY_URL
       );
     } else {
       logger(
         'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
           'You need to add the value: "' +
-          data.searchInsightsSource +
+          'https://cdn.jsdelivr.net/npm/search-insights*' +
           '"\n\n' +
           'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
       );
+      data.gtmOnFailure();
       break;
     }
+
+    log(
+      '[INFO] Algolia GTM template no longer validates event payloads.\nYou can visit https://algolia.com/events/debugger instead.'
+    );
 
     const initOptions = {
       appId: data.appId,
@@ -54,6 +62,7 @@ switch (data.method) {
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,
+      useCookie: data.useCookie === false ? false : true, // true by default
     };
 
     logger(data.method, initOptions);
@@ -76,6 +85,7 @@ switch (data.method) {
   case 'viewedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -88,13 +98,14 @@ switch (data.method) {
 
     logger(data.method, viewedObjectIDsOptions);
     aa(data.method, viewedObjectIDsOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'clickedObjectIDsAfterSearch': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -109,13 +120,14 @@ switch (data.method) {
 
     logger(data.method, clickedObjectIDsAfterSearchOptions);
     aa(data.method, clickedObjectIDsAfterSearchOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'clickedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -129,13 +141,14 @@ switch (data.method) {
 
     logger(data.method, clickedObjectIDsOptions);
     aa(data.method, clickedObjectIDsOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'clickedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -148,13 +161,14 @@ switch (data.method) {
 
     logger(data.method, clickedFiltersOptions);
     aa(data.method, clickedFiltersOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'convertedObjectIDsAfterSearch': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -168,13 +182,14 @@ switch (data.method) {
 
     logger(data.method, convertedObjectIDsAfterSearchOptions);
     aa(data.method, convertedObjectIDsAfterSearchOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'convertedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -187,13 +202,14 @@ switch (data.method) {
 
     logger(data.method, convertedObjectIDsOptions);
     aa(data.method, convertedObjectIDsOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'convertedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -206,13 +222,14 @@ switch (data.method) {
 
     logger(data.method, convertedFiltersOptions);
     aa(data.method, convertedFiltersOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   case 'viewedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
+      data.gtmOnFailure();
       break;
     }
 
@@ -225,11 +242,12 @@ switch (data.method) {
 
     logger(data.method, viewedFiltersOptions);
     aa(data.method, viewedFiltersOptions);
-
+    data.gtmOnSuccess();
     break;
   }
 
   default: {
     logger('You need to set the method for this event.');
+    data.gtmOnFailure();
   }
 }

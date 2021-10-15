@@ -264,31 +264,12 @@
         "name": "cookieDuration",
         "help": "The cookie duration in milliseconds (default to `15552000000`, 6 months).",
         "type": "TEXT",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "type": "POSITIVE_NUMBER"
-          }
-        ]
+        "simpleValueType": true
       },
       {
         "displayName": "User Token",
         "name": "initialUserToken",
         "help": "Set an initial user identifier applied to subsequent events.",
-        "type": "TEXT",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "args": ["^.{1,64}$"],
-            "type": "REGEX"
-          }
-        ]
-      },
-      {
-        "displayName": "Search Insights Source URL",
-        "name": "searchInsightsSource",
-        "defaultValue": "https://cdn.jsdelivr.net/npm/search-insights@1.8.0",
-        "help": "The source URL of the Search Insights library.",
         "type": "TEXT",
         "simpleValueType": true
       }
@@ -312,22 +293,10 @@
         "name": "userToken",
         "help": "The identifier of the user.",
         "type": "TEXT",
-        "simpleValueType": true,
-        "valueValidators": [
-          {
-            "args": ["^.{1,64}$"],
-            "type": "REGEX"
-          }
-        ]
+        "simpleValueType": true
       },
       {
         "help": "The name of the event.",
-        "valueValidators": [
-          {
-            "args": ["^.{1,64}$"],
-            "type": "REGEX"
-          }
-        ],
         "displayName": "Event Name",
         "simpleValueType": true,
         "name": "eventName",
@@ -346,12 +315,6 @@
         "help": "The list of object IDs separated by commas (maximum of 20).",
         "simpleValueType": true,
         "type": "TEXT",
-        "valueValidators": [
-          {
-            "args": [1, 20],
-            "type": "TABLE_ROW_COUNT"
-          }
-        ],
         "enablingConditions": [
           {
             "paramName": "method",
@@ -386,12 +349,6 @@
         "help": "The `queryID` of the search sent from Algolia (<a href=\"https://www.algolia.com/doc/api-reference/api-parameters/clickAnalytics/\">`clickAnalytics`</a> needs to be set)",
         "simpleValueType": true,
         "type": "TEXT",
-        "valueValidators": [
-          {
-            "args": ["[a-z0-9]{32}"],
-            "type": "REGEX"
-          }
-        ],
         "enablingConditions": [
           {
             "paramName": "method",
