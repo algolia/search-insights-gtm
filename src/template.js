@@ -5,6 +5,7 @@ const queryPermission = require('queryPermission');
 const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
+const getType = require('getType');
 
 const TEMPLATE_VERSION = '1.2.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
@@ -17,8 +18,7 @@ function isInitialized() {
 }
 
 function formatValueToList(value) {
-  // `20` is the limit that the engine processes.
-  return value && value.split(',').slice(0, 20);
+  return (getType(value) === 'array' ? value : value.split(',')).slice(0, 20);
 }
 
 function logger(message, event) {
