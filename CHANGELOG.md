@@ -1,3 +1,7 @@
+# 1.2.1 (2021-11-08)
+
+fix: return array if it's already an array ([#11](https://github.com/algolia/search-insights-gtm/pull/11))
+
 # 1.2.0 (2021-10-15)
 
 Upgrade search-insights to v2.0.4 which no longer validates event payloads. You can visit https://algolia.com/events/debugger instead.
