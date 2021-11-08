@@ -7,7 +7,7 @@ const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 const getType = require('getType');
 
-const TEMPLATE_VERSION = '1.2.0';
+const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
   'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';

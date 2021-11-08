@@ -630,8 +630,9 @@ const queryPermission = require('queryPermission');
 const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
+const getType = require('getType');
 
-const TEMPLATE_VERSION = '1.2.0';
+const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
   'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
@@ -642,8 +643,9 @@ function isInitialized() {
 }
 
 function formatValueToList(value) {
-  // `20` is the limit that the engine processes.
-  return value && value.split(',').slice(0, 20);
+  const array = getType(value) === 'array' ? value : value.split(',');
+  // TODO: do not remove the rest, but split into multiple events as soon as search-insights support batch events.
+  return array.slice(0, 20);
 }
 
 function logger(message, event) {
