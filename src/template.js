@@ -18,7 +18,9 @@ function isInitialized() {
 }
 
 function formatValueToList(value) {
-  return (getType(value) === 'array' ? value : value.split(',')).slice(0, 20);
+  const array = getType(value) === 'array' ? value : value.split(',');
+  // TODO: do not remove the rest, but split into multiple events as soon as search-insights support batch events.
+  return array.slice(0, 20);
 }
 
 function logger(message, event) {
