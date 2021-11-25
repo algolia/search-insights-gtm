@@ -10,7 +10,9 @@ const getType = require('getType');
 const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
+  'https://cdn.jsdelivr.net/npm/search-insights@2.0.4' +
+  (!!copyFromWindow('requirejs') ? '/dist/search-insights.iife.min.js' : '');
+
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
