@@ -27,7 +27,8 @@ function formatValueToList(value) {
 
 function getLibraryURL(useIIFE) {
   return (
-    INSIGHTS_LIBRARY_URL + (useIIFE ? '/dist/search-insights.iife.min.js' : '')
+    INSIGHTS_LIBRARY_URL +
+    (useIIFE === true ? '/dist/search-insights.iife.min.js' : '')
   );
 }
 
