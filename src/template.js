@@ -6,7 +6,6 @@ const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 const getType = require('getType');
-const callLater = require('callLater');
 
 const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
@@ -57,21 +56,20 @@ switch (data.method) {
           }
 
           let libraryLoaded = false;
+          // call any method to see if it reacts.
+          // `getUserToken` is syncronous, so it updates the flag immediately.
           aa('getUserToken', null, () => {
-            // call any method to see if it reacts.
             libraryLoaded = true;
           });
-          callLater(() => {
-            if (libraryLoaded) {
-              data.gtmOnSuccess();
-            } else {
-              log(
-                '[ERROR] Failed to load search-insights.\n\n' +
-                  'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
-              );
-              data.gtmOnFailure();
-            }
-          });
+          if (libraryLoaded) {
+            data.gtmOnSuccess();
+          } else {
+            log(
+              '[ERROR] Failed to load search-insights.\n\n' +
+                'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
+            );
+            data.gtmOnFailure();
+          }
         },
         data.gtmOnFailure,
         url
