@@ -11,6 +11,7 @@ const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
   'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
+
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
@@ -21,6 +22,13 @@ function formatValueToList(value) {
   const array = getType(value) === 'array' ? value : value.split(',');
   // TODO: do not remove the rest, but split into multiple events as soon as search-insights support batch events.
   return array.slice(0, 20);
+}
+
+function getLibraryURL(useIIFE) {
+  return (
+    INSIGHTS_LIBRARY_URL +
+    (useIIFE === true ? '/dist/search-insights.iife.min.js' : '')
+  );
 }
 
 function logger(message, event) {
@@ -35,12 +43,36 @@ switch (data.method) {
       break;
     }
 
-    if (queryPermission('inject_script', INSIGHTS_LIBRARY_URL)) {
+    const url = getLibraryURL(data.useIIFE);
+
+    if (queryPermission('inject_script', url)) {
       injectScript(
-        INSIGHTS_LIBRARY_URL,
-        data.gtmOnSuccess,
+        url,
+        () => {
+          if (!copyFromWindow('aa')) {
+            data.gtmOnFailure();
+            logger('[ERROR] Failed to load search-insights.');
+            return;
+          }
+
+          let libraryLoaded = false;
+          // call any method to see if it reacts.
+          // `getUserToken` is syncronous, so it updates the flag immediately.
+          aa('getUserToken', null, () => {
+            libraryLoaded = true;
+          });
+          if (libraryLoaded) {
+            data.gtmOnSuccess();
+          } else {
+            log(
+              '[ERROR] Failed to load search-insights.\n\n' +
+                'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
+            );
+            data.gtmOnFailure();
+          }
+        },
         data.gtmOnFailure,
-        INSIGHTS_LIBRARY_URL
+        url
       );
     } else {
       logger(

@@ -272,6 +272,25 @@
         "help": "Set an initial user identifier applied to subsequent events.",
         "type": "TEXT",
         "simpleValueType": true
+      },
+      {
+        "displayName": "Use IIFE bundle",
+        "name": "useIIFE",
+        "help": "If your website has RequireJS, use IIFE bundle of search-insights to avoid any issue. (False by default)",
+        "type": "SELECT",
+        "macrosInSelect": true,
+        "simpleValueType": true,
+        "notSetText": "",
+        "selectItems": [
+          {
+            "displayValue": "False",
+            "value": false
+          },
+          {
+            "displayValue": "True",
+            "value": true
+          }
+        ]
       }
     ]
   },
