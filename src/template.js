@@ -6,11 +6,15 @@ const setInWindow = require('setInWindow');
 const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 const getType = require('getType');
+const Math = require('Math');
 
 const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
   'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
+
+const MAX_OBJECT_IDS = 20;
+const MAX_FILTERS = 10;
 
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
@@ -33,6 +37,19 @@ function getLibraryURL(useIIFE) {
 
 function logger(message, event) {
   log('[GTM-DEBUG] Search Insights > ' + message, event || '');
+}
+
+function chunkPayload(payload, key, limit) {
+  const numberOfChunks = Math.ceil(payload[key].length / limit);
+  const chunks = [];
+  for (let i = 0; i < numberOfChunks; i++) {
+    chunks.push(
+      Object.assign(payload, {
+        [key]: payload[key].slice(i * limit, (i + 1) * limit),
+      })
+    );
+  }
+  return chunks;
 }
 
 switch (data.method) {
@@ -123,15 +140,17 @@ switch (data.method) {
       break;
     }
 
-    const viewedObjectIDsOptions = {
+    const payload = {
+      eventType: 'view',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
 
-    logger(data.method, viewedObjectIDsOptions);
-    aa(data.method, viewedObjectIDsOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -143,7 +162,8 @@ switch (data.method) {
       break;
     }
 
-    const clickedObjectIDsAfterSearchOptions = {
+    const payload = {
+      eventType: 'click',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -151,9 +171,10 @@ switch (data.method) {
       queryID: data.queryID,
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
 
-    logger(data.method, clickedObjectIDsAfterSearchOptions);
-    aa(data.method, clickedObjectIDsAfterSearchOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -165,16 +186,18 @@ switch (data.method) {
       break;
     }
 
-    const clickedObjectIDsOptions = {
+    const payload = {
+      eventType: 'click',
       eventName: data.eventName,
       index: data.index,
       queryID: data.queryID,
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
 
-    logger(data.method, clickedObjectIDsOptions);
-    aa(data.method, clickedObjectIDsOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -186,15 +209,17 @@ switch (data.method) {
       break;
     }
 
-    const clickedFiltersOptions = {
+    const payload = {
+      eventType: 'click',
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'filters', MAX_FILTERS);
 
-    logger(data.method, clickedFiltersOptions);
-    aa(data.method, clickedFiltersOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -206,16 +231,18 @@ switch (data.method) {
       break;
     }
 
-    const convertedObjectIDsAfterSearchOptions = {
+    const payload = {
+      eventType: 'conversion',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
       queryID: data.queryID,
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
 
-    logger(data.method, convertedObjectIDsAfterSearchOptions);
-    aa(data.method, convertedObjectIDsAfterSearchOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -227,15 +254,17 @@ switch (data.method) {
       break;
     }
 
-    const convertedObjectIDsOptions = {
+    const payload = {
+      eventType: 'conversion',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
 
-    logger(data.method, convertedObjectIDsOptions);
-    aa(data.method, convertedObjectIDsOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -247,15 +276,17 @@ switch (data.method) {
       break;
     }
 
-    const convertedFiltersOptions = {
+    const payload = {
+      eventType: 'conversion',
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'filters', MAX_FILTERS);
 
-    logger(data.method, convertedFiltersOptions);
-    aa(data.method, convertedFiltersOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
@@ -267,15 +298,17 @@ switch (data.method) {
       break;
     }
 
-    const viewedFiltersOptions = {
+    const payload = {
+      eventType: 'view',
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
     };
+    const chunks = chunkPayload(payload, 'filters', MAX_FILTERS);
 
-    logger(data.method, viewedFiltersOptions);
-    aa(data.method, viewedFiltersOptions);
+    logger('sendEvents', chunks);
+    aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
