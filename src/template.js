@@ -7,6 +7,7 @@ const copyFromWindow = require('copyFromWindow');
 const makeInteger = require('makeInteger');
 const getType = require('getType');
 const Math = require('Math');
+const Object = require('Object');
 
 const TEMPLATE_VERSION = '1.2.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
@@ -37,12 +38,21 @@ function logger(message, event) {
   log('[GTM-DEBUG] Search Insights > ' + message, event || '');
 }
 
+function clone(obj) {
+  const keys = Object.keys(obj);
+  const newObj = {};
+  keys.forEach((key) => {
+    newObj[key] = obj[key];
+  });
+  return newObj;
+}
+
 function chunkPayload(payload, keys, limit) {
   // This assumes the values of `keys` have the same length.
   const numberOfChunks = Math.ceil(payload[keys[0]].length / limit);
   const chunks = [];
   for (let i = 0; i < numberOfChunks; i++) {
-    const newPayload = Object.assign({}, payload);
+    const newPayload = clone(payload);
     keys.forEach((key) => {
       newPayload[key] = payload[key].slice(i * limit, (i + 1) * limit);
     });
