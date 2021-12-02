@@ -23,9 +23,7 @@ function isInitialized() {
 }
 
 function formatValueToList(value) {
-  const array = getType(value) === 'array' ? value : value.split(',');
-  // TODO: do not remove the rest, but split into multiple events as soon as search-insights support batch events.
-  return array.slice(0, 20);
+  return getType(value) === 'array' ? value : value.split(',');
 }
 
 function getLibraryURL(useIIFE) {
@@ -39,15 +37,17 @@ function logger(message, event) {
   log('[GTM-DEBUG] Search Insights > ' + message, event || '');
 }
 
-function chunkPayload(payload, key, limit) {
-  const numberOfChunks = Math.ceil(payload[key].length / limit);
+function chunkPayload(payload, keys, limit) {
+  // This assumes the values of `keys` have the same length.
+  const numberOfChunks = Math.ceil(payload[keys[0]].length / limit);
   const chunks = [];
   for (let i = 0; i < numberOfChunks; i++) {
-    chunks.push(
-      Object.assign(payload, {
-        [key]: payload[key].slice(i * limit, (i + 1) * limit),
-      })
-    );
+    const newPayload = Object.assign({}, payload);
+    keys.forEach((key) => {
+      newPayload[key] = payload[key].slice(i * limit, (i + 1) * limit);
+    });
+
+    chunks.push(newPayload);
   }
   return chunks;
 }
@@ -147,7 +147,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -171,7 +171,11 @@ switch (data.method) {
       queryID: data.queryID,
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
+    const chunks = chunkPayload(
+      payload,
+      ['objectIDs', 'positions'],
+      MAX_OBJECT_IDS
+    );
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -194,7 +198,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -216,7 +220,7 @@ switch (data.method) {
       index: data.index,
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'filters', MAX_FILTERS);
+    const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -239,7 +243,7 @@ switch (data.method) {
       queryID: data.queryID,
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -261,7 +265,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'objectIDs', MAX_OBJECT_IDS);
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -283,7 +287,7 @@ switch (data.method) {
       index: data.index,
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'filters', MAX_FILTERS);
+    const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
@@ -305,7 +309,7 @@ switch (data.method) {
       index: data.index,
       userToken: data.userToken,
     };
-    const chunks = chunkPayload(payload, 'filters', MAX_FILTERS);
+    const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
