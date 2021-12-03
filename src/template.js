@@ -52,7 +52,7 @@ function chunkPayload(payload, keys, limit) {
   const numberOfChunks = Math.ceil(payload[keys[0]].length / limit);
   const chunks = [];
   for (let i = 0; i < numberOfChunks; i++) {
-    const newPayload = clone(payload);
+    const newPayload = shallowObjectClone(payload);
     keys.forEach((key) => {
       newPayload[key] = payload[key].slice(i * limit, (i + 1) * limit);
     });
