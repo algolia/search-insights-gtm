@@ -38,7 +38,7 @@ function logger(message, event) {
   log('[GTM-DEBUG] Search Insights > ' + message, event || '');
 }
 
-function clone(obj) {
+function shallowObjectClone(obj) {
   const keys = Object.keys(obj);
   const newObj = {};
   keys.forEach((key) => {
