@@ -48,7 +48,16 @@ function shallowObjectClone(obj) {
 }
 
 function chunkPayload(payload, keys, limit) {
-  // This assumes the values of `keys` have the same length.
+  // check if the values in `payload` for each of `keys` have the same length.
+  const sameNumberOfValues = keys
+    .map((k) => payload[k].length)
+    .every((n) => n === payload[keys[0]].length);
+  if (!sameNumberOfValues) {
+    // chunking behaviour is unsafe due to unequal length arrays to chunk.
+    // bail out early.
+    return [payload];
+  }
+
   const numberOfChunks = Math.ceil(payload[keys[0]].length / limit);
   const chunks = [];
   for (let i = 0; i < numberOfChunks; i++) {
