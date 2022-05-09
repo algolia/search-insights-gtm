@@ -24,7 +24,16 @@ function isInitialized() {
 }
 
 function formatValueToList(value) {
-  return getType(value) === 'array' ? value : value.split(',');
+  const type = getType(value);
+  if (type === 'array') {
+    return value;
+  } else if (type === 'number') {
+    return [value];
+  } else if (type === 'string') {
+    return value.split(',');
+  } else {
+    return null;
+  }
 }
 
 function getLibraryURL(useIIFE) {
