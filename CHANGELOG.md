@@ -1,6 +1,12 @@
+# 1.3.0 (2022-05-09)
+
+- fix: allow number in formatValueToList ([#14](https://github.com/algolia/search-insights-gtm/pull/14))
+- feat: chunk events with items exceeding limits ([#13](https://github.com/algolia/search-insights-gtm/pull/13))
+- fix: use iife in case requirejs is included in customers' website ([#12](https://github.com/algolia/search-insights-gtm/pull/12))
+
 # 1.2.1 (2021-11-08)
 
-fix: return array if it's already an array ([#11](https://github.com/algolia/search-insights-gtm/pull/11))
+- fix: return array if it's already an array ([#11](https://github.com/algolia/search-insights-gtm/pull/11))
 
 # 1.2.0 (2021-10-15)
 
