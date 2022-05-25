@@ -653,10 +653,10 @@ const getType = require('getType');
 const Math = require('Math');
 const Object = require('Object');
 
-const TEMPLATE_VERSION = '1.3.0';
+const TEMPLATE_VERSION = '1.3.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.0.4';
+  'https://cdn.jsdelivr.net/npm/search-insights@2.2.1';
 
 const MAX_OBJECT_IDS = 20;
 const MAX_FILTERS = 10;
