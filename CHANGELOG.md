@@ -1,3 +1,7 @@
+# 1.3.1 (2022-05-25)
+
+- fix: bump search-insights.js to 2.2.1
+
 # 1.3.0 (2022-05-09)
 
 - fix: allow number in formatValueToList ([#14](https://github.com/algolia/search-insights-gtm/pull/14))
