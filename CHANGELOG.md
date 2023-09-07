@@ -1,3 +1,7 @@
+# 1.4.0 (2023-09-07)
+
+- fix: bump search-insights.js to 2.7.0
+
 # 1.3.1 (2022-05-25)
 
 - fix: bump search-insights.js to 2.2.1
