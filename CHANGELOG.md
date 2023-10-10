@@ -1,3 +1,7 @@
+# 1.4.1 (2023-10-10)
+
+- fix: update logo
+
 # 1.4.0 (2023-09-07)
 
 - fix: bump search-insights.js to 2.7.0
