@@ -322,12 +322,16 @@
         "type": "TEXT"
       },
       {
-        "help": "The specific type of conversion event.",
+        "help": "The specific type of conversion event. Set to 'None' for conversion events that do not have a subtype.",
         "displayName": "Conversion Event Subtype",
         "simpleValueType": true,
         "name": "eventSubtype",
         "type": "SELECT",
         "selectItems": [
+          {
+            "displayValue": "None",
+            "value": ""
+          },
           {
             "displayValue": "Add to cart",
             "value": "addToCart"
