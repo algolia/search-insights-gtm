@@ -270,6 +270,8 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       queryID: data.queryID,
       userToken: data.userToken,
+      value: data.value,
+      currency: data.currency,
     };
     if (data.eventSubtype) {
       payload.eventSubtype = data.eventSubtype;
@@ -295,6 +297,8 @@ switch (data.method) {
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
+      value: data.value,
+      currency: data.currency,
     };
     if (data.eventSubtype) {
       payload.eventSubtype = data.eventSubtype;
@@ -320,6 +324,8 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      value: data.value,
+      currency: data.currency,
     };
     if (data.eventSubtype) {
       payload.eventSubtype = data.eventSubtype;
