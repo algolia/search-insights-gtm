@@ -322,6 +322,40 @@
         "type": "TEXT"
       },
       {
+        "help": "The specific type of conversion event.",
+        "displayName": "Conversion Event Subtype",
+        "simpleValueType": true,
+        "name": "eventSubtype",
+        "type": "SELECT",
+        "selectItems": [
+          {
+            "displayValue": "Add to cart",
+            "value": "addToCart"
+          },
+          {
+            "displayValue": "Purchase",
+            "value": "purchase"
+          }
+        ],
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedFilters"
+          }
+        ]
+      },
+      {
         "displayName": "Index",
         "name": "index",
         "help": "The name of the index related to the event.",
