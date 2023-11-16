@@ -12,7 +12,7 @@ const Object = require('Object');
 const TEMPLATE_VERSION = '1.4.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.7.0';
+  'https://cdn.jsdelivr.net/npm/search-insights@2.10.0';
 
 const MAX_OBJECT_IDS = 20;
 const MAX_FILTERS = 10;
