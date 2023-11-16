@@ -265,13 +265,15 @@ switch (data.method) {
 
     const payload = {
       eventType: 'conversion',
-      eventSubtype: data.eventSubtype,
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
       queryID: data.queryID,
       userToken: data.userToken,
     };
+    if (data.eventSubtype) {
+      payload.eventSubtype = data.eventSubtype;
+    }
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
@@ -289,12 +291,14 @@ switch (data.method) {
 
     const payload = {
       eventType: 'conversion',
-      eventSubtype: data.eventSubtype,
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
       userToken: data.userToken,
     };
+    if (data.eventSubtype) {
+      payload.eventSubtype = data.eventSubtype;
+    }
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
@@ -312,12 +316,14 @@ switch (data.method) {
 
     const payload = {
       eventType: 'conversion',
-      eventSubtype: data.eventSubtype,
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
     };
+    if (data.eventSubtype) {
+      payload.eventSubtype = data.eventSubtype;
+    }
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
     logger('sendEvents', chunks);
