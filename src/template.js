@@ -265,6 +265,7 @@ switch (data.method) {
 
     const payload = {
       eventType: 'conversion',
+      eventSubtype: data.eventSubtype,
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -288,6 +289,7 @@ switch (data.method) {
 
     const payload = {
       eventType: 'conversion',
+      eventSubtype: data.eventSubtype,
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -310,6 +312,7 @@ switch (data.method) {
 
     const payload = {
       eventType: 'conversion',
+      eventSubtype: data.eventSubtype,
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
