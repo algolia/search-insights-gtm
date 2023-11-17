@@ -456,6 +456,54 @@
             "paramValue": "viewedFilters"
           }
         ]
+      },
+      {
+        "help": "The total value of the add to cart or purchase event, e.g. 1.234. If provided, currency must be specified as well.",
+        "displayName": "Value",
+        "simpleValueType": true,
+        "type": "TEXT",
+        "name": "value",
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedFilters"
+          }
+        ]
+      },
+      {
+        "help": "The currency associated with the value, e.g. USD.",
+        "displayName": "Currency",
+        "simpleValueType": true,
+        "type": "TEXT",
+        "name": "currency",
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedFilters"
+          }
+        ]
       }
     ]
   }
