@@ -401,6 +401,65 @@
         ]
       },
       {
+        "type": "SIMPLE_TABLE",
+        "name": "objectData",
+        "displayName": "Object Data",
+        "help": "A list of data containing additional information about associated objects (maximum of 20).",
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "viewedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "clickedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "clickedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          }
+        ],
+        "simpleTableColumns": [
+          {
+            "defaultValue": "",
+            "displayName": "Query ID",
+            "name": "queryID",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Price",
+            "name": "price",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Discount",
+            "name": "discount",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Quantity",
+            "name": "quantity",
+            "type": "TEXT"
+          }
+        ]
+      },
+      {
         "displayName": "Query ID",
         "name": "queryID",
         "help": "The `queryID` of the search sent from Algolia (<a href=\"https://www.algolia.com/doc/api-reference/api-parameters/clickAnalytics/\">`clickAnalytics`</a> needs to be set)",
