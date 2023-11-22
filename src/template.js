@@ -36,6 +36,41 @@ function formatValueToList(value) {
   }
 }
 
+function transformObjectData(objectData) {
+  if (getType(objectData) !== 'array') {
+    return objectData;
+  }
+
+  return objectData.map((od) => {
+    if (getType(od) !== 'object') {
+      return od;
+    }
+
+    // The API expects price to be a number so delete it entirely if empty.
+    if (getType(od.price) === 'string' && od.price === '') {
+      od.price = undefined;
+    }
+
+    // The API expects discount to be a number so delete it entirely if empty.
+    if (getType(od.discount) === 'string' && od.discount === '') {
+      od.discount = undefined;
+    }
+
+    // The API expects quantity to be an integer.
+    // If quantity is empty, then delete it entirely because the API allows
+    // quantity to be omitted from the event payload.
+    if (getType(od.quantity) === 'string') {
+      if (od.quantity) {
+        od.quantity = makeInteger(od.quantity);
+      } else {
+        od.quantity = undefined;
+      }
+    }
+
+    return od;
+  });
+}
+
 function getLibraryURL(useIIFE) {
   return (
     INSIGHTS_LIBRARY_URL +
@@ -173,6 +208,7 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
@@ -195,6 +231,7 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       positions: formatValueToList(data.positions).map(makeInteger),
       queryID: data.queryID,
       userToken: data.userToken,
@@ -224,6 +261,7 @@ switch (data.method) {
       index: data.index,
       queryID: data.queryID,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
@@ -268,6 +306,7 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       queryID: data.queryID,
       userToken: data.userToken,
       value: data.value,
@@ -296,6 +335,7 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
       value: data.value,
       currency: data.currency,
