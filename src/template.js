@@ -47,12 +47,12 @@ function transformObjectData(objectData) {
     }
 
     // The API expects price to be a number so delete it entirely if empty.
-    if (getType(od.price) === 'string' && !od.price) {
+    if (getType(od.price) === 'string' && od.price === '') {
       od.price = undefined;
     }
 
     // The API expects discount to be a number so delete it entirely if empty.
-    if (getType(od.discount) === 'string' && !od.discount) {
+    if (getType(od.discount) === 'string' && od.discount === '') {
       od.discount = undefined;
     }
 
