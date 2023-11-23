@@ -173,6 +173,7 @@ switch (data.method) {
     const initOptions = {
       appId: data.appId,
       apiKey: data.apiKey,
+      authenticatedUserToken: data.init_authenticatedUserToken,
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,

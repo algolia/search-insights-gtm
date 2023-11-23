@@ -219,6 +219,13 @@
     "type": "GROUP",
     "subParams": [
       {
+        "displayName": "Authenticated User Token",
+        "name": "init_authenticatedUserToken",
+        "help": "Optional. Pseudonymous identifier for authenticated users. Never include personally identifiable information in user tokens.",
+        "type": "TEXT",
+        "simpleValueType": true
+      },
+      {
         "displayName": "Opt Out User",
         "name": "userHasOptedOut",
         "help": "Whether to exclude users from analytics.",
