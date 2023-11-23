@@ -11,6 +11,10 @@
         "value": "init"
       },
       {
+        "displayValue": "Set Authenticated User Token",
+        "value": "setAuthenticatedUserToken"
+      },
+      {
         "displayValue": "Clicked Object IDs",
         "value": "clickedObjectIDs"
       },
@@ -60,6 +64,18 @@
         ],
         "displayName": "Initializes the Algola Search Insights library.",
         "name": "labelInit",
+        "type": "LABEL"
+      },
+      {
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "setAuthenticatedUserToken"
+          }
+        ],
+        "displayName": "Set the authenticated user token for all subsequent events sent to the Algolia Insights API. Use this method to automatically send the `authenticatedUserToken` with every event.",
+        "name": "labelSetAuthenticatedUserToken",
         "type": "LABEL"
       },
       {
@@ -298,8 +314,55 @@
     "enablingConditions": [
       {
         "paramName": "method",
-        "type": "NOT_EQUALS",
-        "paramValue": "init"
+        "type": "EQUALS",
+        "paramValue": "setAuthenticatedUserToken"
+      }
+    ],
+    "name": "SetAuthenticatedUserTokenOptions",
+    "displayName": "Set Authenticated User Options",
+    "groupStyle": "NO_ZIPPY",
+    "type": "GROUP",
+    "subParams": [
+      {
+        "displayName": "Authenticated User Token",
+        "help": "Pseudonymous identifier for authenticated users. Never include personally identifiable information in user tokens.",
+        "name": "setAuthenticatedUserToken_token",
+        "type": "TEXT",
+        "simpleValueType": true
+      }
+    ]
+  },
+  {
+    "enablingConditions": [
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "clickedObjectIDs"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "clickedObjectIDsAfterSearch"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "clickedFilters"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "convertedObjectIDs"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "convertedObjectIDsAfterSearch"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "convertedFilters"
       }
     ],
     "name": "EventOptions",
@@ -311,6 +374,13 @@
         "displayName": "User Token",
         "name": "userToken",
         "help": "The identifier of the user.",
+        "type": "TEXT",
+        "simpleValueType": true
+      },
+      {
+        "displayName": "Authenticated User Token",
+        "name": "authenticatedUserToken",
+        "help": "Optional. Pseudonymous identifier for authenticated users. Never include personally identifiable information in user tokens.",
         "type": "TEXT",
         "simpleValueType": true
       },

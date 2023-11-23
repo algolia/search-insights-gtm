@@ -97,7 +97,7 @@ function chunkPayload(payload, keys, limit) {
     .map((k) => payload[k].length)
     .every((n) => n === payload[keys[0]].length);
   if (!sameNumberOfValues) {
-    // chunking behaviour is unsafe due to unequal length arrays to chunk.
+    // chunking behavior is unsafe due to unequal length arrays to chunk.
     // bail out early.
     return [payload];
   }
@@ -137,7 +137,7 @@ switch (data.method) {
 
           let libraryLoaded = false;
           // call any method to see if it reacts.
-          // `getUserToken` is syncronous, so it updates the flag immediately.
+          // `getUserToken` is synchronous, so it updates the flag immediately.
           aa('getUserToken', null, () => {
             libraryLoaded = true;
           });
@@ -196,6 +196,19 @@ switch (data.method) {
     break;
   }
 
+  case 'setAuthenticatedUserToken': {
+    if (!isInitialized()) {
+      logger('You need to call the "init" method first.');
+      data.gtmOnFailure();
+      break;
+    }
+
+    const token = data.setAuthenticatedUserToken_token || undefined;
+
+    logger('setAuthenticatedUserToken', token);
+    aa('setAuthenticatedUserToken', token);
+  }
+
   case 'viewedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
@@ -210,6 +223,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
@@ -235,6 +249,7 @@ switch (data.method) {
       positions: formatValueToList(data.positions).map(makeInteger),
       queryID: data.queryID,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(
       payload,
@@ -263,6 +278,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
@@ -285,6 +301,7 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
@@ -309,6 +326,7 @@ switch (data.method) {
       objectData: transformObjectData(data.objectData),
       queryID: data.queryID,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
       value: data.value,
       currency: data.currency,
     };
@@ -337,6 +355,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
       value: data.value,
       currency: data.currency,
     };
@@ -364,6 +383,7 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
       value: data.value,
       currency: data.currency,
     };
@@ -391,6 +411,7 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
