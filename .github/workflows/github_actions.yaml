@@ -1,0 +1,28 @@
+name: 'GitHub Actions'
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/**'
+
+jobs:
+  lint:
+    name: 'Lint GitHub Actions'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'Install actionlint'
+        id: install
+        run: |
+          echo "::add-matcher::.github/actionlint-matcher.json"
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        shell: bash
+      - name: 'Lint workflow files'
+        run: ${{ steps.install.outputs.executable }} -color
+        shell: bash
