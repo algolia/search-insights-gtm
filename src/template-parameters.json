@@ -62,7 +62,7 @@
             "paramValue": "init"
           }
         ],
-        "displayName": "Initializes the Algola Search Insights library.",
+        "displayName": "Initializes the Algolia Search Insights library.",
         "name": "labelInit",
         "type": "LABEL"
       },
