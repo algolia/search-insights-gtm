@@ -1,0 +1,44 @@
+name: 'Git status'
+description: 'Returns information based on the local git status'
+inputs:
+  subdirectory:
+    description: 'Limit status checking to this subdirectory'
+    default: '.'
+    required: false
+outputs:
+  tracked:
+    description: 'Whether there are changes to tracked files'
+    value: ${{ steps.changes.outputs.tracked }}
+  untracked:
+    description: 'Whether there are untracked files present'
+    value: ${{ steps.changes.outputs.untracked }}
+runs:
+  using: 'composite'
+  steps:
+    - id: changes
+      shell: bash
+      run: |-
+        echo "Updating index..."
+        git update-index -q --really-refresh
+        if ! git diff-index --exit-code --patch HEAD ${{ inputs.subdirectory }} > ${{ runner.temp }}/status.diff
+        then
+          echo "::error There are changes to tracked files in the checkout"
+          echo "::group::Diff"
+          cat ${{ runner.temp }}/status.diff
+          echo "::endgroup::"
+          echo "tracked=true" >> "${GITHUB_OUTPUT}"
+        else
+          echo "There are no changes to tracked files"
+          echo "tracked=false" >> "${GITHUB_OUTPUT}"
+        fi
+        if [ -n "$(git ls-files --others -- ${{ inputs.subdirectory }})" ]
+        then
+          echo "::error There are untracked files in the checkout"
+          echo "::group::Untracked"
+          git ls-files --others ${{ inputs.subdirectory }}
+          echo "::endgroup::"
+          echo "untracked=true" >> "${GITHUB_OUTPUT}"
+        else
+          echo "There are no untracked files"
+          echo "untracked=false" >> "${GITHUB_OUTPUT}"
+        fi

@@ -18,8 +18,32 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - run: yarn install --immutable --immutable-cache
       - run: yarn build
+      - uses: ./.github/actions/git-status
+        id: changes
+      - name: 'Create commit'
+        if: github.event_name == 'pull_request' && steps.changes.outputs.tracked == 'true'
+        id: commit
+        shell: bash
+        run: |-
+          git config --local user.name "algolia-bot"
+          git config --local user.email "algolia-bot@users.noreply.github.com"
+          git add --update
+          git commit -m "chore: run yarn build"
+        continue-on-error: true
+      - name: 'Push commit'
+        if: github.event_name == 'pull_request' && steps.commit.outcome == 'success'
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: '5'
+          retry_wait_seconds: '10'
+          command: git push
+          on_retry_command: git pull --rebase --autostash
+          timeout_minutes: '5'
