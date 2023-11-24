@@ -38,6 +38,10 @@ ___TEMPLATE_PARAMETERS___
         "value": "init"
       },
       {
+        "displayValue": "Set Authenticated User Token",
+        "value": "setAuthenticatedUserToken"
+      },
+      {
         "displayValue": "Clicked Object IDs",
         "value": "clickedObjectIDs"
       },
@@ -85,8 +89,20 @@ ___TEMPLATE_PARAMETERS___
             "paramValue": "init"
           }
         ],
-        "displayName": "Initializes the Algola Search Insights library.",
+        "displayName": "Initializes the Algolia Search Insights library.",
         "name": "labelInit",
+        "type": "LABEL"
+      },
+      {
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "setAuthenticatedUserToken"
+          }
+        ],
+        "displayName": "Set the authenticated user token for all subsequent events sent to the Algolia Insights API. Use this method to automatically send the `authenticatedUserToken` with every event.",
+        "name": "labelSetAuthenticatedUserToken",
         "type": "LABEL"
       },
       {
@@ -230,6 +246,13 @@ ___TEMPLATE_PARAMETERS___
     "type": "GROUP",
     "subParams": [
       {
+        "displayName": "Authenticated User Token",
+        "name": "init_authenticatedUserToken",
+        "help": "Optional. Pseudonymous identifier for authenticated users. Never include personally identifiable information in user tokens.",
+        "type": "TEXT",
+        "simpleValueType": true
+      },
+      {
         "displayName": "Opt Out User",
         "name": "userHasOptedOut",
         "help": "Whether to exclude users from analytics.",
@@ -325,8 +348,55 @@ ___TEMPLATE_PARAMETERS___
     "enablingConditions": [
       {
         "paramName": "method",
-        "type": "NOT_EQUALS",
-        "paramValue": "init"
+        "type": "EQUALS",
+        "paramValue": "setAuthenticatedUserToken"
+      }
+    ],
+    "name": "SetAuthenticatedUserTokenOptions",
+    "displayName": "Set Authenticated User Options",
+    "groupStyle": "NO_ZIPPY",
+    "type": "GROUP",
+    "subParams": [
+      {
+        "displayName": "Authenticated User Token",
+        "help": "Pseudonymous identifier for authenticated users. Never include personally identifiable information in user tokens.",
+        "name": "setAuthenticatedUserToken_token",
+        "type": "TEXT",
+        "simpleValueType": true
+      }
+    ]
+  },
+  {
+    "enablingConditions": [
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "clickedObjectIDs"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "clickedObjectIDsAfterSearch"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "clickedFilters"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "convertedObjectIDs"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "convertedObjectIDsAfterSearch"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "convertedFilters"
       }
     ],
     "name": "EventOptions",
@@ -338,6 +408,13 @@ ___TEMPLATE_PARAMETERS___
         "displayName": "User Token",
         "name": "userToken",
         "help": "The identifier of the user.",
+        "type": "TEXT",
+        "simpleValueType": true
+      },
+      {
+        "displayName": "Authenticated User Token",
+        "name": "authenticatedUserToken",
+        "help": "Optional. Pseudonymous identifier for authenticated users. Never include personally identifiable information in user tokens.",
         "type": "TEXT",
         "simpleValueType": true
       },
@@ -886,7 +963,7 @@ function chunkPayload(payload, keys, limit) {
     .map((k) => payload[k].length)
     .every((n) => n === payload[keys[0]].length);
   if (!sameNumberOfValues) {
-    // chunking behaviour is unsafe due to unequal length arrays to chunk.
+    // chunking behavior is unsafe due to unequal length arrays to chunk.
     // bail out early.
     return [payload];
   }
@@ -926,7 +1003,7 @@ switch (data.method) {
 
           let libraryLoaded = false;
           // call any method to see if it reacts.
-          // `getUserToken` is syncronous, so it updates the flag immediately.
+          // `getUserToken` is synchronous, so it updates the flag immediately.
           aa('getUserToken', null, () => {
             libraryLoaded = true;
           });
@@ -962,6 +1039,7 @@ switch (data.method) {
     const initOptions = {
       appId: data.appId,
       apiKey: data.apiKey,
+      authenticatedUserToken: data.init_authenticatedUserToken,
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,
@@ -985,6 +1063,19 @@ switch (data.method) {
     break;
   }
 
+  case 'setAuthenticatedUserToken': {
+    if (!isInitialized()) {
+      logger('You need to call the "init" method first.');
+      data.gtmOnFailure();
+      break;
+    }
+
+    const token = data.setAuthenticatedUserToken_token || undefined;
+
+    logger('setAuthenticatedUserToken', token);
+    aa('setAuthenticatedUserToken', token);
+  }
+
   case 'viewedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
@@ -999,6 +1090,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
@@ -1024,6 +1116,7 @@ switch (data.method) {
       positions: formatValueToList(data.positions).map(makeInteger),
       queryID: data.queryID,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(
       payload,
@@ -1052,6 +1145,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
@@ -1074,6 +1168,7 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
@@ -1098,6 +1193,7 @@ switch (data.method) {
       objectData: transformObjectData(data.objectData),
       queryID: data.queryID,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
       value: data.value,
       currency: data.currency,
     };
@@ -1126,6 +1222,7 @@ switch (data.method) {
       objectIDs: formatValueToList(data.objectIDs),
       objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
       value: data.value,
       currency: data.currency,
     };
@@ -1153,6 +1250,7 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
       value: data.value,
       currency: data.currency,
     };
@@ -1180,6 +1278,7 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
