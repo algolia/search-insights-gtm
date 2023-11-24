@@ -1,0 +1,19 @@
+name: '(noop) GitHub Actions'
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - '.github/**'
+
+jobs:
+  lint:
+    name: 'Lint GitHub Actions'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 2
+    steps:
+      - run: echo "no GitHub Actions changes to lint"
