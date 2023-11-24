@@ -349,6 +349,44 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT"
       },
       {
+        "help": "The specific type of conversion event. Set to 'None' for conversion events that do not have a subtype.",
+        "displayName": "Conversion Event Subtype",
+        "simpleValueType": true,
+        "name": "eventSubtype",
+        "type": "SELECT",
+        "selectItems": [
+          {
+            "displayValue": "None",
+            "value": ""
+          },
+          {
+            "displayValue": "Add to cart",
+            "value": "addToCart"
+          },
+          {
+            "displayValue": "Purchase",
+            "value": "purchase"
+          }
+        ],
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedFilters"
+          }
+        ]
+      },
+      {
         "displayName": "Index",
         "name": "index",
         "help": "The name of the index related to the event.",
@@ -386,6 +424,65 @@ ___TEMPLATE_PARAMETERS___
             "paramName": "method",
             "type": "EQUALS",
             "paramValue": "viewedObjectIDs"
+          }
+        ]
+      },
+      {
+        "type": "SIMPLE_TABLE",
+        "name": "objectData",
+        "displayName": "Object Data",
+        "help": "A list of data containing additional information about associated objects (maximum of 20).",
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "viewedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "clickedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "clickedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          }
+        ],
+        "simpleTableColumns": [
+          {
+            "defaultValue": "",
+            "displayName": "Query ID",
+            "name": "queryID",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Price",
+            "name": "price",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Discount",
+            "name": "discount",
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": "",
+            "displayName": "Quantity",
+            "name": "quantity",
+            "type": "TEXT"
           }
         ]
       },
@@ -443,6 +540,54 @@ ___TEMPLATE_PARAMETERS___
             "paramName": "method",
             "type": "EQUALS",
             "paramValue": "viewedFilters"
+          }
+        ]
+      },
+      {
+        "help": "The total value of the add to cart or purchase event, e.g. 1.234. If provided, currency must be specified as well.",
+        "displayName": "Value",
+        "simpleValueType": true,
+        "type": "TEXT",
+        "name": "value",
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedFilters"
+          }
+        ]
+      },
+      {
+        "help": "The currency associated with the value, e.g. USD.",
+        "displayName": "Currency",
+        "simpleValueType": true,
+        "type": "TEXT",
+        "name": "currency",
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedFilters"
           }
         ]
       }
@@ -656,7 +801,7 @@ const Object = require('Object');
 const TEMPLATE_VERSION = '1.4.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.7.0';
+  'https://cdn.jsdelivr.net/npm/search-insights@2.10.0';
 
 const MAX_OBJECT_IDS = 20;
 const MAX_FILTERS = 10;
@@ -678,6 +823,41 @@ function formatValueToList(value) {
   } else {
     return null;
   }
+}
+
+function transformObjectData(objectData) {
+  if (getType(objectData) !== 'array') {
+    return objectData;
+  }
+
+  return objectData.map((od) => {
+    if (getType(od) !== 'object') {
+      return od;
+    }
+
+    // The API expects price to be a number so delete it entirely if empty.
+    if (getType(od.price) === 'string' && od.price === '') {
+      od.price = undefined;
+    }
+
+    // The API expects discount to be a number so delete it entirely if empty.
+    if (getType(od.discount) === 'string' && od.discount === '') {
+      od.discount = undefined;
+    }
+
+    // The API expects quantity to be an integer.
+    // If quantity is empty, then delete it entirely because the API allows
+    // quantity to be omitted from the event payload.
+    if (getType(od.quantity) === 'string') {
+      if (od.quantity) {
+        od.quantity = makeInteger(od.quantity);
+      } else {
+        od.quantity = undefined;
+      }
+    }
+
+    return od;
+  });
 }
 
 function getLibraryURL(useIIFE) {
@@ -817,6 +997,7 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
@@ -839,6 +1020,7 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       positions: formatValueToList(data.positions).map(makeInteger),
       queryID: data.queryID,
       userToken: data.userToken,
@@ -868,6 +1050,7 @@ switch (data.method) {
       index: data.index,
       queryID: data.queryID,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
     };
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
@@ -912,9 +1095,15 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       queryID: data.queryID,
       userToken: data.userToken,
+      value: data.value,
+      currency: data.currency,
     };
+    if (data.eventSubtype) {
+      payload.eventSubtype = data.eventSubtype;
+    }
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
@@ -935,8 +1124,14 @@ switch (data.method) {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
+      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
+      value: data.value,
+      currency: data.currency,
     };
+    if (data.eventSubtype) {
+      payload.eventSubtype = data.eventSubtype;
+    }
     const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
     logger('sendEvents', chunks);
@@ -958,7 +1153,12 @@ switch (data.method) {
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
+      value: data.value,
+      currency: data.currency,
     };
+    if (data.eventSubtype) {
+      payload.eventSubtype = data.eventSubtype;
+    }
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
     logger('sendEvents', chunks);
