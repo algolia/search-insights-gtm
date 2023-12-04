@@ -875,7 +875,7 @@ const getType = require('getType');
 const Math = require('Math');
 const Object = require('Object');
 
-const TEMPLATE_VERSION = '1.4.1';
+const TEMPLATE_VERSION = '1.5.0';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
   'https://cdn.jsdelivr.net/npm/search-insights@2.10.0';
