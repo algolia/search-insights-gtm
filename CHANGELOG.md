@@ -1,3 +1,10 @@
+# 1.5.0 (2023-12-04)
+
+- feat: support authenticated user tokens ([#25](https://github.com/algolia/search-insights-gtm/pull/25))
+- feat: add objectData support ([#22](https://github.com/algolia/search-insights-gtm/pull/22))
+- feat: add value and currency support for conversion events ([#20](https://github.com/algolia/search-insights-gtm/pull/20))
+- feat: add eventSubtype propagation to conversion events ([#18](https://github.com/algolia/search-insights-gtm/pull/18))
+
 # 1.4.1 (2023-10-10)
 
 - fix: update logo
