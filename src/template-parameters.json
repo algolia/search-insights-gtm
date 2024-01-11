@@ -370,6 +370,16 @@
         "paramName": "method",
         "type": "EQUALS",
         "paramValue": "convertedFilters"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "viewedObjectIDs"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "viewedFilters"
       }
     ],
     "name": "EventOptions",
