@@ -1,6 +1,9 @@
 homepage: https://www.algolia.com
 documentation: https://github.com/algolia/search-insights-gtm
 versions:
+  - sha: beab09e125cd653f477944edda6117244a3846e4
+    changeNotes: "fix: ensure that event options can be specified for
+      viewedObjectIDs and viewedFilters (#30)"
   - sha: 8210dcc499389385cfff09d0b633b8b9143fcab2
     changeNotes: "feat: support ecommerce event types and authenticated user tokens"
   - sha: dbe70546723fb556fd71178e02db5e681ca3fb13

@@ -1,3 +1,7 @@
+# 1.5.1 (2024-01-11)
+
+- fix: ensure that event options can be specified for viewedObjectIDs and viewedFilters ([#30](https://github.com/algolia/search-insights-gtm/pull/30))
+
 # 1.5.0 (2023-12-04)
 
 - feat: support authenticated user tokens ([#25](https://github.com/algolia/search-insights-gtm/pull/25))
