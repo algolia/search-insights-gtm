@@ -397,6 +397,16 @@ ___TEMPLATE_PARAMETERS___
         "paramName": "method",
         "type": "EQUALS",
         "paramValue": "convertedFilters"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "viewedObjectIDs"
+      },
+      {
+        "paramName": "method",
+        "type": "EQUALS",
+        "paramValue": "viewedFilters"
       }
     ],
     "name": "EventOptions",
@@ -875,7 +885,7 @@ const getType = require('getType');
 const Math = require('Math');
 const Object = require('Object');
 
-const TEMPLATE_VERSION = '1.5.0';
+const TEMPLATE_VERSION = '1.5.1';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
   'https://cdn.jsdelivr.net/npm/search-insights@2.10.0';
