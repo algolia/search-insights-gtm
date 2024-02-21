@@ -463,35 +463,20 @@
           {
             "paramName": "method",
             "type": "EQUALS",
-            "paramValue": "clickedObjectIDs"
-          },
-          {
-            "paramName": "method",
-            "type": "EQUALS",
-            "paramValue": "clickedObjectIDsAfterSearch"
-          },
-          {
-            "paramName": "method",
-            "type": "EQUALS",
             "paramValue": "convertedObjectIDs"
           },
           {
             "paramName": "method",
             "type": "EQUALS",
             "paramValue": "convertedObjectIDsAfterSearch"
-          },
-          {
-            "paramName": "method",
-            "type": "EQUALS",
-            "paramValue": "viewedObjectIDs"
           }
         ]
       },
       {
-        "type": "SIMPLE_TABLE",
+        "type": "TEXT",
         "name": "objectData",
         "displayName": "Object Data",
-        "help": "A list of data containing additional information about associated objects (maximum of 20).",
+        "help": "A list of <a href=\"https://www.algolia.com/doc/api-reference/api-methods/added-to-cart-object-ids/#method-param-objectdata-2\">data</a> containing additional information about associated objects (maximum of 20).",
         "enablingConditions": [
           {
             "paramName": "method",
@@ -517,32 +502,6 @@
             "paramName": "method",
             "type": "EQUALS",
             "paramValue": "convertedObjectIDs"
-          }
-        ],
-        "simpleTableColumns": [
-          {
-            "defaultValue": "",
-            "displayName": "Query ID",
-            "name": "queryID",
-            "type": "TEXT"
-          },
-          {
-            "defaultValue": "",
-            "displayName": "Price",
-            "name": "price",
-            "type": "TEXT"
-          },
-          {
-            "defaultValue": "",
-            "displayName": "Discount",
-            "name": "discount",
-            "type": "TEXT"
-          },
-          {
-            "defaultValue": "",
-            "displayName": "Quantity",
-            "name": "quantity",
-            "type": "TEXT"
           }
         ]
       },
