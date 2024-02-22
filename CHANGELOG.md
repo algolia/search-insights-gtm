@@ -1,3 +1,8 @@
+# 1.5.2 (2024-02-22)
+
+- fix: enable objectData to be specified as a simple text field ([#32](https://github.com/algolia/search-insights-gtm/pull/32))
+- fix: minor code style issues ([#33](https://github.com/algolia/search-insights-gtm/pull/33))
+
 # 1.5.1 (2024-01-11)
 
 - fix: ensure that event options can be specified for viewedObjectIDs and viewedFilters ([#30](https://github.com/algolia/search-insights-gtm/pull/30))
