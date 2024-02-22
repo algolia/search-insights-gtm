@@ -490,12 +490,27 @@ ___TEMPLATE_PARAMETERS___
           {
             "paramName": "method",
             "type": "EQUALS",
+            "paramValue": "clickedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "clickedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
             "paramValue": "convertedObjectIDs"
           },
           {
             "paramName": "method",
             "type": "EQUALS",
             "paramValue": "convertedObjectIDsAfterSearch"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "viewedObjectIDs"
           }
         ]
       },
