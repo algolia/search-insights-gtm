@@ -38,11 +38,13 @@ function formatValueToList(value) {
 
 function transformObjectData(objectData) {
   if (getType(objectData) !== 'array') {
+    logger('objectData is not a list', objectData);
     return objectData;
   }
 
   return objectData.map((od) => {
     if (getType(od) !== 'object') {
+      logger('objectData list item is not an object', od);
       return od;
     }
 

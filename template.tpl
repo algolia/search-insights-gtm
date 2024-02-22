@@ -515,26 +515,11 @@ ___TEMPLATE_PARAMETERS___
         ]
       },
       {
-        "type": "SIMPLE_TABLE",
+        "type": "TEXT",
         "name": "objectData",
         "displayName": "Object Data",
-        "help": "A list of data containing additional information about associated objects (maximum of 20).",
+        "help": "A list of <a href=\"https://www.algolia.com/doc/api-reference/api-methods/added-to-cart-object-ids/#method-param-objectdata-2\">data</a> containing additional information about associated objects (maximum of 20).",
         "enablingConditions": [
-          {
-            "paramName": "method",
-            "type": "EQUALS",
-            "paramValue": "viewedObjectIDs"
-          },
-          {
-            "paramName": "method",
-            "type": "EQUALS",
-            "paramValue": "clickedObjectIDsAfterSearch"
-          },
-          {
-            "paramName": "method",
-            "type": "EQUALS",
-            "paramValue": "clickedObjectIDs"
-          },
           {
             "paramName": "method",
             "type": "EQUALS",
@@ -544,32 +529,6 @@ ___TEMPLATE_PARAMETERS___
             "paramName": "method",
             "type": "EQUALS",
             "paramValue": "convertedObjectIDs"
-          }
-        ],
-        "simpleTableColumns": [
-          {
-            "defaultValue": "",
-            "displayName": "Query ID",
-            "name": "queryID",
-            "type": "TEXT"
-          },
-          {
-            "defaultValue": "",
-            "displayName": "Price",
-            "name": "price",
-            "type": "TEXT"
-          },
-          {
-            "defaultValue": "",
-            "displayName": "Discount",
-            "name": "discount",
-            "type": "TEXT"
-          },
-          {
-            "defaultValue": "",
-            "displayName": "Quantity",
-            "name": "quantity",
-            "type": "TEXT"
           }
         ]
       },
@@ -914,11 +873,13 @@ function formatValueToList(value) {
 
 function transformObjectData(objectData) {
   if (getType(objectData) !== 'array') {
+    logger('objectData is not a list', objectData);
     return objectData;
   }
 
   return objectData.map((od) => {
     if (getType(od) !== 'object') {
+      logger('objectData list item is not an object', od);
       return od;
     }
 
