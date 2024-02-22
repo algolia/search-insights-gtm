@@ -1014,7 +1014,7 @@ switch (data.method) {
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
       cookieDuration: data.cookieDuration,
-      useCookie: data.useCookie === false ? false : true, // true by default
+      useCookie: data.useCookie !== false, // true by default
     };
 
     logger(data.method, initOptions);
@@ -1045,6 +1045,7 @@ switch (data.method) {
 
     logger('setAuthenticatedUserToken', token);
     aa('setAuthenticatedUserToken', token);
+    break;
   }
 
   case 'viewedObjectIDs': {
