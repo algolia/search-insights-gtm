@@ -46,4 +46,4 @@ Thanks to [David Vallejo](https://www.thyngster.com/) for his initial work on th
 
 ## License
 
-MIT
+Apache 2.0 - See [LICENSE](/LICENSE) for more information.
