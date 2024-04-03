@@ -4,12 +4,8 @@ const { exec } = require('shelljs');
 const YAML = require('yaml');
 
 function getLatestCommit() {
-  const title = exec(`git log -1 --pretty=%s`)
-    .toString()
-    .trim();
-  const hash = exec(`git log -1 --pretty=%H`)
-    .toString()
-    .trim();
+  const title = exec(`git log -1 --pretty=%s`).toString().trim();
+  const hash = exec(`git log -1 --pretty=%H`).toString().trim();
   return { title, hash };
 }
 
