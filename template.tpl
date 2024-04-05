@@ -954,9 +954,20 @@ function chunkPayload(payload, keys, limit) {
 
 switch (data.method) {
   case 'init': {
+    const pointer = copyFromWindow(INSIGHTS_OBJECT_NAME);
+    if (pointer && pointer !== 'aa') {
+      logger(
+        'window.' +
+          INSIGHTS_OBJECT_NAME +
+          ' is "' +
+          pointer +
+          '", not "aa". This might cause issues if not using GTM to send events.'
+      );
+    }
+
     if (isInitialized()) {
       logger('The "init" event has already been called.');
-      data.gtmOnFailure();
+      data.gtmOnSuccess();
       break;
     }
 
