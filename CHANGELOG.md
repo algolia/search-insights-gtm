@@ -1,3 +1,7 @@
+# 1.5.3 (2024-04-08)
+
+- fix: don't fail on a second init, bump search-insights to 2.13.0 ([#34](https://github.com/algolia/search-insights-gtm/pull/34))
+
 # 1.5.2 (2024-02-22)
 
 - fix: enable objectData to be specified as a simple text field ([#32](https://github.com/algolia/search-insights-gtm/pull/32))
