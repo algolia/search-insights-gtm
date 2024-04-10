@@ -1,3 +1,7 @@
+# 1.5.4 (2024-04-10)
+
+- fix: don't log debug statement if objectData is undefined ([#36](https://github.com/algolia/search-insights-gtm/pull/36))
+
 # 1.5.3 (2024-04-08)
 
 - fix: don't fail on a second init, bump search-insights to 2.13.0 ([#34](https://github.com/algolia/search-insights-gtm/pull/34))
