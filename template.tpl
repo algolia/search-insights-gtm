@@ -872,7 +872,8 @@ function formatValueToList(value) {
 }
 
 function transformObjectData(objectData) {
-  if (getType(objectData) !== 'array') {
+  const objectDataType = getType(objectData);
+  if (objectDataType !== 'undefined' && objectDataType !== 'array') {
     logger('objectData is not a list', objectData);
     return objectData;
   }
