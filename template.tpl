@@ -871,8 +871,18 @@ function formatValueToList(value) {
   }
 }
 
+function isNullOrUndefined(value) {
+  const type = getType(value);
+  return type === 'null' || type === 'undefined';
+}
+
 function transformObjectData(objectData) {
-  if (getType(objectData) !== 'array') {
+  const objectDataType = getType(objectData);
+  if (isNullOrUndefined(objectDataType)) {
+    return objectData;
+  }
+
+  if (objectDataType !== 'array') {
     logger('objectData is not a list', objectData);
     return objectData;
   }
