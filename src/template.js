@@ -36,9 +36,18 @@ function formatValueToList(value) {
   }
 }
 
+function isNullOrUndefined(value) {
+  const type = getType(value);
+  return type === 'null' || type === 'undefined';
+}
+
 function transformObjectData(objectData) {
   const objectDataType = getType(objectData);
-  if (objectDataType !== 'undefined' && objectDataType !== 'array') {
+  if (isNullOrUndefined(objectDataType)) {
+    return objectData;
+  }
+
+  if (objectDataType !== 'array') {
     logger('objectData is not a list', objectData);
     return objectData;
   }
