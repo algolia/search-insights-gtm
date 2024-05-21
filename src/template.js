@@ -19,8 +19,17 @@ const MAX_FILTERS = 10;
 
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
-function isInitialized() {
+function isInsightsLoaded() {
   return !!copyFromWindow(INSIGHTS_OBJECT_NAME);
+}
+
+function isInitialized() {
+  try {
+    aa('sendEvents', []);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 function formatValueToList(value) {
@@ -140,52 +149,54 @@ switch (data.method) {
       );
     }
 
+    if (!isInsightsLoaded()) {
+      const url = getLibraryURL(data.useIIFE);
+
+      if (queryPermission('inject_script', url)) {
+        injectScript(
+          url,
+          () => {
+            if (!copyFromWindow('aa')) {
+              data.gtmOnFailure();
+              logger('[ERROR] Failed to load search-insights.');
+              return;
+            }
+
+            let libraryLoaded = false;
+            // call any method to see if it reacts.
+            // `getUserToken` is synchronous, so it updates the flag immediately.
+            aa('getUserToken', null, () => {
+              libraryLoaded = true;
+            });
+            if (libraryLoaded) {
+              data.gtmOnSuccess();
+            } else {
+              log(
+                '[ERROR] Failed to load search-insights.\n\n' +
+                  'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
+              );
+              data.gtmOnFailure();
+            }
+          },
+          data.gtmOnFailure,
+          url
+        );
+      } else {
+        logger(
+          'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
+            'You need to add the value: "' +
+            'https://cdn.jsdelivr.net/npm/search-insights*' +
+            '"\n\n' +
+            'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
+        );
+        data.gtmOnFailure();
+        break;
+      }
+    }
+
     if (isInitialized()) {
       logger('The "init" event has already been called.');
       data.gtmOnSuccess();
-      break;
-    }
-
-    const url = getLibraryURL(data.useIIFE);
-
-    if (queryPermission('inject_script', url)) {
-      injectScript(
-        url,
-        () => {
-          if (!copyFromWindow('aa')) {
-            data.gtmOnFailure();
-            logger('[ERROR] Failed to load search-insights.');
-            return;
-          }
-
-          let libraryLoaded = false;
-          // call any method to see if it reacts.
-          // `getUserToken` is synchronous, so it updates the flag immediately.
-          aa('getUserToken', null, () => {
-            libraryLoaded = true;
-          });
-          if (libraryLoaded) {
-            data.gtmOnSuccess();
-          } else {
-            log(
-              '[ERROR] Failed to load search-insights.\n\n' +
-                'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
-            );
-            data.gtmOnFailure();
-          }
-        },
-        data.gtmOnFailure,
-        url
-      );
-    } else {
-      logger(
-        'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
-          'You need to add the value: "' +
-          'https://cdn.jsdelivr.net/npm/search-insights*' +
-          '"\n\n' +
-          'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
-      );
-      data.gtmOnFailure();
       break;
     }
 
@@ -221,7 +232,7 @@ switch (data.method) {
   }
 
   case 'setAuthenticatedUserToken': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" method first.');
       data.gtmOnFailure();
       break;
@@ -235,7 +246,7 @@ switch (data.method) {
   }
 
   case 'viewedObjectIDs': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -259,7 +270,7 @@ switch (data.method) {
   }
 
   case 'clickedObjectIDsAfterSearch': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -289,7 +300,7 @@ switch (data.method) {
   }
 
   case 'clickedObjectIDs': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -314,7 +325,7 @@ switch (data.method) {
   }
 
   case 'clickedFilters': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -337,7 +348,7 @@ switch (data.method) {
   }
 
   case 'convertedObjectIDsAfterSearch': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -367,7 +378,7 @@ switch (data.method) {
   }
 
   case 'convertedObjectIDs': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -396,7 +407,7 @@ switch (data.method) {
   }
 
   case 'convertedFilters': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -424,7 +435,7 @@ switch (data.method) {
   }
 
   case 'viewedFilters': {
-    if (!isInitialized()) {
+    if (!isInsightsLoaded()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
