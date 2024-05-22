@@ -1,3 +1,7 @@
+# 1.5.5 (2024-05-22)
+
+- fix: never skip init ([#39](https://github.com/algolia/search-insights-gtm/pull/39))
+
 # 1.5.4 (2024-04-10)
 
 - fix: don't log debug statement if objectData is undefined ([#36](https://github.com/algolia/search-insights-gtm/pull/36))
