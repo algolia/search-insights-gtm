@@ -25,6 +25,7 @@ function isInsightsLoaded() {
 
 function isInitialized() {
   try {
+    // sendEvents will throw an error if the apiKey and appId are not set.
     aa('sendEvents', []);
     return true;
   } catch (e) {
@@ -192,9 +193,7 @@ switch (data.method) {
         data.gtmOnFailure();
         break;
       }
-    }
-
-    if (isInitialized()) {
+    } else if (isInitialized()) {
       logger('The "init" event has already been called.');
       data.gtmOnSuccess();
       break;
