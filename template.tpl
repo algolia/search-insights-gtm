@@ -854,18 +854,8 @@ const MAX_FILTERS = 10;
 
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
-function isInsightsLoaded() {
-  return !!copyFromWindow(INSIGHTS_OBJECT_NAME);
-}
-
 function isInitialized() {
-  try {
-    // sendEvents will throw an error if the apiKey and appId are not set.
-    aa('sendEvents', []);
-    return true;
-  } catch (e) {
-    return false;
-  }
+  return !!copyFromWindow(INSIGHTS_OBJECT_NAME);
 }
 
 function formatValueToList(value) {
@@ -985,7 +975,7 @@ switch (data.method) {
       );
     }
 
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       const url = getLibraryURL(data.useIIFE);
 
       if (queryPermission('inject_script', url)) {
@@ -1028,10 +1018,8 @@ switch (data.method) {
         data.gtmOnFailure();
         break;
       }
-    } else if (isInitialized()) {
-      logger('The "init" event has already been called.');
-      data.gtmOnSuccess();
-      break;
+    } else {
+      logger('[INFO] search-insights is already loaded.');
     }
 
     log(
@@ -1066,7 +1054,7 @@ switch (data.method) {
   }
 
   case 'setAuthenticatedUserToken': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" method first.');
       data.gtmOnFailure();
       break;
@@ -1080,7 +1068,7 @@ switch (data.method) {
   }
 
   case 'viewedObjectIDs': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1104,7 +1092,7 @@ switch (data.method) {
   }
 
   case 'clickedObjectIDsAfterSearch': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1134,7 +1122,7 @@ switch (data.method) {
   }
 
   case 'clickedObjectIDs': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1159,7 +1147,7 @@ switch (data.method) {
   }
 
   case 'clickedFilters': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1182,7 +1170,7 @@ switch (data.method) {
   }
 
   case 'convertedObjectIDsAfterSearch': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1212,7 +1200,7 @@ switch (data.method) {
   }
 
   case 'convertedObjectIDs': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1241,7 +1229,7 @@ switch (data.method) {
   }
 
   case 'convertedFilters': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
@@ -1269,7 +1257,7 @@ switch (data.method) {
   }
 
   case 'viewedFilters': {
-    if (!isInsightsLoaded()) {
+    if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
