@@ -847,7 +847,7 @@ const Object = require('Object');
 const TEMPLATE_VERSION = '1.5.4';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
 const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.13.0';
+  'https://cdn.jsdelivr.net/npm/search-insights@2.14.0';
 
 const MAX_OBJECT_IDS = 20;
 const MAX_FILTERS = 10;
@@ -975,53 +975,51 @@ switch (data.method) {
       );
     }
 
-    if (isInitialized()) {
-      logger('The "init" event has already been called.');
-      data.gtmOnSuccess();
-      break;
-    }
+    if (!isInitialized()) {
+      const url = getLibraryURL(data.useIIFE);
 
-    const url = getLibraryURL(data.useIIFE);
+      if (queryPermission('inject_script', url)) {
+        injectScript(
+          url,
+          () => {
+            if (!copyFromWindow('aa')) {
+              data.gtmOnFailure();
+              logger('[ERROR] Failed to load search-insights.');
+              return;
+            }
 
-    if (queryPermission('inject_script', url)) {
-      injectScript(
-        url,
-        () => {
-          if (!copyFromWindow('aa')) {
-            data.gtmOnFailure();
-            logger('[ERROR] Failed to load search-insights.');
-            return;
-          }
-
-          let libraryLoaded = false;
-          // call any method to see if it reacts.
-          // `getUserToken` is synchronous, so it updates the flag immediately.
-          aa('getUserToken', null, () => {
-            libraryLoaded = true;
-          });
-          if (libraryLoaded) {
-            data.gtmOnSuccess();
-          } else {
-            log(
-              '[ERROR] Failed to load search-insights.\n\n' +
-                'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
-            );
-            data.gtmOnFailure();
-          }
-        },
-        data.gtmOnFailure,
-        url
-      );
+            let libraryLoaded = false;
+            // call any method to see if it reacts.
+            // `getUserToken` is synchronous, so it updates the flag immediately.
+            aa('getUserToken', null, () => {
+              libraryLoaded = true;
+            });
+            if (libraryLoaded) {
+              data.gtmOnSuccess();
+            } else {
+              log(
+                '[ERROR] Failed to load search-insights.\n\n' +
+                  'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
+              );
+              data.gtmOnFailure();
+            }
+          },
+          data.gtmOnFailure,
+          url
+        );
+      } else {
+        logger(
+          'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
+            'You need to add the value: "' +
+            'https://cdn.jsdelivr.net/npm/search-insights*' +
+            '"\n\n' +
+            'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
+        );
+        data.gtmOnFailure();
+        break;
+      }
     } else {
-      logger(
-        'The library endpoint is not allowed in the "Injects Scripts" permissions.\n\n' +
-          'You need to add the value: "' +
-          'https://cdn.jsdelivr.net/npm/search-insights*' +
-          '"\n\n' +
-          'See https://www.simoahava.com/analytics/custom-templates-guide-for-google-tag-manager/#step-4-modify-permissions'
-      );
-      data.gtmOnFailure();
-      break;
+      logger('[INFO] search-insights is already loaded.');
     }
 
     log(
