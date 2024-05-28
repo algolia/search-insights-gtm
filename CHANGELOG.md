@@ -1,3 +1,7 @@
+# 1.6.5 (2024-05-28)
+
+- feat: allow escaped commas and add tests ([#40](https://github.com/algolia/search-insights-gtm/pull/40))
+
 # 1.5.5 (2024-05-22)
 
 - fix: never skip init ([#39](https://github.com/algolia/search-insights-gtm/pull/39))
