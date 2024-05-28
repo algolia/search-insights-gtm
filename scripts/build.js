@@ -19,6 +19,7 @@ async function build() {
   const sandboxedJsContent = await fs.readFile(
     path.join(ROOT_DIR, 'template.js')
   );
+  const testContent = await fs.readFile(path.join(ROOT_DIR, 'tests.yaml'));
 
   const templateContent = [
     '___TERMS_OF_SERVICE___',
@@ -31,6 +32,8 @@ async function build() {
     webPermissionsContent,
     '___SANDBOXED_JS_FOR_WEB_TEMPLATE___',
     sandboxedJsContent,
+    '___TESTS___',
+    testContent,
   ].join('\n\n');
 
   await fs.writeFile(DIST_PATH, templateContent);
