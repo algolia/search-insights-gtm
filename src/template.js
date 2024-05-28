@@ -16,11 +16,31 @@ const INSIGHTS_LIBRARY_URL =
 
 const MAX_OBJECT_IDS = 20;
 const MAX_FILTERS = 10;
+const COMMA_REPLACEMENT = 'PRESERVED_COMMA_HERE';
 
 const aa = createArgumentsQueue('aa', 'aa.queue');
 
 function isInitialized() {
   return !!copyFromWindow(INSIGHTS_OBJECT_NAME);
+}
+
+function replaceEscapedCommas(str) {
+  while (str.indexOf('\\,') !== -1) {
+    str = str.replace('\\,', COMMA_REPLACEMENT);
+  }
+  return str;
+}
+
+function replacePlaceholderText(str) {
+  while (str.indexOf(COMMA_REPLACEMENT) !== -1) {
+    str = str.replace(COMMA_REPLACEMENT, ',');
+  }
+  return str;
+}
+
+function splitPreservingEscapedCommas(str) {
+  // GTM does not support regexes in custom templates, so we need to use straight text replacements instead
+  return replaceEscapedCommas(str).split(',').map(replacePlaceholderText);
 }
 
 function formatValueToList(value) {
@@ -30,7 +50,7 @@ function formatValueToList(value) {
   } else if (type === 'number') {
     return [value];
   } else if (type === 'string') {
-    return value.split(',');
+    return splitPreservingEscapedCommas(value);
   } else {
     return null;
   }
