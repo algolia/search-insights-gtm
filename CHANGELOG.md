@@ -1,3 +1,7 @@
+# 1.6.6 (2024-08-02)
+
+- feat: support setting `host` in `init` method  
+
 # 1.6.5 (2024-05-28)
 
 - feat: allow escaped commas and add tests ([#40](https://github.com/algolia/search-insights-gtm/pull/40))
