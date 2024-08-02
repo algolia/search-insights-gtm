@@ -1,4 +1,4 @@
-# 1.6.6 (2024-08-02)
+# 1.6.6 (2024-08-02) ([#41](https://github.com/algolia/search-insights-gtm/pull/41))
 
 - feat: support setting `host` in `init` method  
 
