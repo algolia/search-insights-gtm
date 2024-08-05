@@ -314,6 +314,13 @@
             "value": true
           }
         ]
+      },
+      {
+        "displayName": "Host",
+        "name": "host",
+        "help": "Optional. URL to route requests through before they are forwarded to Algolia.",
+        "type": "TEXT",
+        "simpleValueType": true
       }
     ]
   },
