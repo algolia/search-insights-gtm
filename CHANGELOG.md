@@ -1,3 +1,7 @@
+# 1.6.7 (2024-11-21)
+
+- up: search-insights.js updated to ([2.17.3](https://github.com/algolia/search-insights.js/releases/tag/v2.17.3))
+
 # 1.6.6 (2024-08-02)
 
 - feat: support setting `host` in `init` method ([#41](https://github.com/algolia/search-insights-gtm/pull/41))
