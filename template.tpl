@@ -850,112 +850,101 @@ const makeInteger = require('makeInteger');
 const getType = require('getType');
 const Math = require('Math');
 const Object = require('Object');
-
-const TEMPLATE_VERSION = '1.6.6';
 const INSIGHTS_OBJECT_NAME = 'AlgoliaAnalyticsObject';
-const INSIGHTS_LIBRARY_URL =
-  'https://cdn.jsdelivr.net/npm/search-insights@2.14.0';
-
+const INSIGHTS_LIBRARY_URL = 'https://cdn.jsdelivr.net/npm/search-insights@2.14.0';
 const MAX_OBJECT_IDS = 20;
 const MAX_FILTERS = 10;
 const COMMA_REPLACEMENT = 'PRESERVED_COMMA_HERE';
-
 const aa = createArgumentsQueue('aa', 'aa.queue');
-
 function isInitialized() {
   return !!copyFromWindow(INSIGHTS_OBJECT_NAME);
 }
-
 function replaceEscapedCommas(str) {
   while (str.indexOf('\\,') !== -1) {
     str = str.replace('\\,', COMMA_REPLACEMENT);
   }
   return str;
 }
-
 function replacePlaceholderText(str) {
   while (str.indexOf(COMMA_REPLACEMENT) !== -1) {
     str = str.replace(COMMA_REPLACEMENT, ',');
   }
   return str;
 }
-
 function splitPreservingEscapedCommas(str) {
   // GTM does not support regexes in custom templates, so we need to use straight text replacements instead
   return replaceEscapedCommas(str).split(',').map(replacePlaceholderText);
 }
-
 function formatValueToList(value) {
-  const type = getType(value);
-  if (type === 'array') {
+  if (isArray(value)) {
     return value;
-  } else if (type === 'number') {
+  } else if (isNumber(value)) {
     return [value];
-  } else if (type === 'string') {
+  } else if (isString(value)) {
     return splitPreservingEscapedCommas(value);
   } else {
-    return null;
+    return [];
   }
 }
-
+function isArray(value) {
+  return getType(value) === 'array';
+}
+function isNumber(value) {
+  return getType(value) === 'number';
+}
+function isString(value) {
+  return getType(value) === 'string';
+}
+function isObject(value) {
+  return getType(value) === 'object';
+}
 function isNullOrUndefined(value) {
   const type = getType(value);
   return type === 'null' || type === 'undefined';
 }
-
 function transformObjectData(objectData) {
-  const objectDataType = getType(objectData);
-  if (isNullOrUndefined(objectDataType)) {
-    return objectData;
+  if (isNullOrUndefined(objectData)) {
+    return undefined;
   }
-
-  if (objectDataType !== 'array') {
+  if (!isArray(objectData)) {
     logger('objectData is not a list', objectData);
     return objectData;
   }
-
   return objectData.map((od) => {
-    if (getType(od) !== 'object') {
+    if (!isObject(od)) {
       logger('objectData list item is not an object', od);
       return od;
     }
-
     // The API expects price to be a number so delete it entirely if empty.
-    if (getType(od.price) === 'string' && od.price === '') {
+    if (isString(od.price) && od.price === '') {
       od.price = undefined;
     }
-
     // The API expects discount to be a number so delete it entirely if empty.
-    if (getType(od.discount) === 'string' && od.discount === '') {
+    if (isString(od.discount) && od.discount === '') {
       od.discount = undefined;
     }
-
     // The API expects quantity to be an integer.
     // If quantity is empty, then delete it entirely because the API allows
     // quantity to be omitted from the event payload.
-    if (getType(od.quantity) === 'string') {
+    if (isString(od.quantity)) {
       if (od.quantity) {
         od.quantity = makeInteger(od.quantity);
       } else {
         od.quantity = undefined;
       }
     }
-
     return od;
   });
 }
-
 function getLibraryURL(useIIFE) {
   return (
     INSIGHTS_LIBRARY_URL +
     (useIIFE === true ? '/dist/search-insights.iife.min.js' : '')
   );
 }
-
 function logger(message, event) {
   log('[GTM-DEBUG] Search Insights > ' + message, event || '');
 }
-
 function shallowObjectClone(obj) {
   const keys = Object.keys(obj);
   const newObj = {};
@@ -964,7 +953,6 @@ function shallowObjectClone(obj) {
   });
   return newObj;
 }
-
 function chunkPayload(payload, keys, limit) {
   // check if the values in `payload` for each of `keys` have the same length.
   const sameNumberOfValues = keys
@@ -975,7 +963,6 @@ function chunkPayload(payload, keys, limit) {
     // bail out early.
     return [payload];
   }
-
   const numberOfChunks = Math.ceil(payload[keys[0]].length / limit);
   const chunks = [];
   for (let i = 0; i < numberOfChunks; i++) {
@@ -983,12 +970,10 @@ function chunkPayload(payload, keys, limit) {
     keys.forEach((key) => {
       newPayload[key] = payload[key].slice(i * limit, (i + 1) * limit);
     });
-
     chunks.push(newPayload);
   }
   return chunks;
 }
-
 switch (data.method) {
   case 'init': {
     const pointer = copyFromWindow(INSIGHTS_OBJECT_NAME);
@@ -1001,10 +986,8 @@ switch (data.method) {
           '", not "aa". This might cause issues if not using GTM to send events.'
       );
     }
-
     if (!isInitialized()) {
       const url = getLibraryURL(data.useIIFE);
-
       if (queryPermission('inject_script', url)) {
         injectScript(
           url,
@@ -1014,7 +997,6 @@ switch (data.method) {
               logger('[ERROR] Failed to load search-insights.');
               return;
             }
-
             let libraryLoaded = false;
             // call any method to see if it reacts.
             // `getUserToken` is synchronous, so it updates the flag immediately.
@@ -1048,11 +1030,9 @@ switch (data.method) {
     } else {
       logger('[INFO] search-insights is already loaded.');
     }
-
     log(
       '[INFO] Algolia GTM template no longer validates event payloads.\nYou can visit https://algolia.com/events/debugger instead.'
     );
-
     const initOptions = {
       appId: data.appId,
       apiKey: data.apiKey,
@@ -1063,45 +1043,35 @@ switch (data.method) {
       useCookie: data.useCookie !== false, // true by default
       host: data.host,
     };
-
     logger(data.method, initOptions);
     aa(data.method, initOptions);
-
-    const userAgent = 'insights-gtm (' + TEMPLATE_VERSION + ')';
+    const userAgent = 'insights-gtm (1.6.6)';
     logger('addAlgoliaAgent', userAgent);
     aa('addAlgoliaAgent', userAgent);
-
     if (data.initialUserToken) {
       logger('setUserToken', data.initialUserToken);
       aa('setUserToken', data.initialUserToken);
     }
-
     setInWindow(INSIGHTS_OBJECT_NAME, 'aa');
-
     break;
   }
-
   case 'setAuthenticatedUserToken': {
     if (!isInitialized()) {
       logger('You need to call the "init" method first.');
       data.gtmOnFailure();
       break;
     }
-
     const token = data.setAuthenticatedUserToken_token || undefined;
-
     logger('setAuthenticatedUserToken', token);
     aa('setAuthenticatedUserToken', token);
     break;
   }
-
   case 'viewedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'view',
       eventName: data.eventName,
@@ -1111,21 +1081,22 @@ switch (data.method) {
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
     };
-    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
-
+    const chunks = chunkPayload(
+      payload,
+      ['objectIDs', 'objectData'],
+      MAX_OBJECT_IDS
+    );
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'clickedObjectIDsAfterSearch': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'click',
       eventName: data.eventName,
@@ -1139,23 +1110,20 @@ switch (data.method) {
     };
     const chunks = chunkPayload(
       payload,
-      ['objectIDs', 'positions'],
+      ['objectIDs', 'objectData', 'positions'],
       MAX_OBJECT_IDS
     );
-
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'clickedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'click',
       eventName: data.eventName,
@@ -1166,21 +1134,22 @@ switch (data.method) {
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
     };
-    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
-
+    const chunks = chunkPayload(
+      payload,
+      ['objectIDs', 'objectData'],
+      MAX_OBJECT_IDS
+    );
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'clickedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'click',
       eventName: data.eventName,
@@ -1190,20 +1159,17 @@ switch (data.method) {
       authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
-
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'convertedObjectIDsAfterSearch': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'conversion',
       eventName: data.eventName,
@@ -1219,21 +1185,22 @@ switch (data.method) {
     if (data.eventSubtype) {
       payload.eventSubtype = data.eventSubtype;
     }
-    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
-
+    const chunks = chunkPayload(
+      payload,
+      ['objectIDs', 'objectData'],
+      MAX_OBJECT_IDS
+    );
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'convertedObjectIDs': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'conversion',
       eventName: data.eventName,
@@ -1248,21 +1215,22 @@ switch (data.method) {
     if (data.eventSubtype) {
       payload.eventSubtype = data.eventSubtype;
     }
-    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
-
+    const chunks = chunkPayload(
+      payload,
+      ['objectIDs', 'objectData'],
+      MAX_OBJECT_IDS
+    );
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'convertedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'conversion',
       eventName: data.eventName,
@@ -1277,20 +1245,17 @@ switch (data.method) {
       payload.eventSubtype = data.eventSubtype;
     }
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
-
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   case 'viewedFilters': {
     if (!isInitialized()) {
       logger('You need to call the "init" event first.');
       data.gtmOnFailure();
       break;
     }
-
     const payload = {
       eventType: 'view',
       eventName: data.eventName,
@@ -1300,13 +1265,11 @@ switch (data.method) {
       authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
-
     logger('sendEvents', chunks);
     aa('sendEvents', chunks);
     data.gtmOnSuccess();
     break;
   }
-
   default: {
     logger('You need to set the method for this event.');
     data.gtmOnFailure();

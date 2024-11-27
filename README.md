@@ -28,7 +28,7 @@ Each section of the custom template is in the [`src/`](src) folder. This command
 
 ### Releasing
 
-The `TEMPLATE_VERSION` variable in the [sandboxed JavaScript](src/template.js) should be incremented for each change. This variable is used to send usage metrics to Algolia.
+The `version` property in [`package.json`](package.json) should be incremented for each change (e.g. run the `yarn version <major|minor|patch>` command). This value is used to send usage metrics to Algolia.
 
 To release a new version:
 
