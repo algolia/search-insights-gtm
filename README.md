@@ -28,17 +28,13 @@ Each section of the custom template is in the [`src/`](src) folder. This command
 
 ### Releasing
 
-The `version` property in [`package.json`](package.json) should be incremented for each change (e.g. run the `yarn version <major|minor|patch>` command). This value is used to send usage metrics to Algolia.
+Run `yarn run release` to prepare the release (this command is also executed weekly). When this is run the commit messages are read and based on their content:
+- a branch is created
+- the `version` property in [`package.json`](package.json) is updated
+- [`CHANGELOG.md`](CHANGELOG.md) is updated
+- a PR is raised with this content
 
-To release a new version:
-
-- Run the `build` command to update the [generated template](./template.tpl)
-- Commit the change (`git commit -m "chore: update version to vx.y.z"`)
-- Run the `release` command to update `metadata.yml` file with the commit SHA.
-- Update the [changelog](CHANGELOG.md) manually (and probably `changeNotes` in `metadata.yml` as well)
-- Commit it to GitHub
-
-For users to update the template, they need to download it again and to reimport it in the GTM interface (they won't lose their configuration).
+To trigger the release "Squash and merge" the PR.
 
 ## Credits
 

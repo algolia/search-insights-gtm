@@ -1,0 +1,61 @@
+name: Ship js Manual Prepare
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  manual_prepare:
+    if: |
+      github.event_name == 'issue_comment' &&
+      (github.event.comment.author_association == 'member' || github.event.comment.author_association == 'owner') &&
+      startsWith(github.event.comment.body, '@shipjs prepare')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+          token: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: |
+          git config --global user.email "algolia-bot@users.noreply.github.com"
+          git config --global user.name "algolia-bot"
+      - run: yarn run release -- --yes --no-browse
+        env:
+          GITHUB_TOKEN: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
+
+  create_done_comment:
+    if: success()
+    needs: manual_prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "@${{github.actor}} `shipjs prepare` done"
+            })
+
+  create_fail_comment:
+    if: cancelled() || failure()
+    needs: manual_prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "@${{github.actor}} `shipjs prepare` fail"
+            })
