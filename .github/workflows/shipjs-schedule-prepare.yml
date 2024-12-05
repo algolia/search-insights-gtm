@@ -1,0 +1,26 @@
+name: Ship js Schedule Prepare
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  "0 0 * * 2"
+jobs:
+  schedule_prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: master
+          token: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'yarn'
+      - run: yarn install --immutable
+      - run: |
+          git config --global user.email "algolia-bot@users.noreply.github.com"
+          git config --global user.name "algolia-bot"
+      - run: yarn run release -- --yes --no-browse
+        env:
+          GITHUB_TOKEN: ${{ secrets.ALGOLIA_BOT_GITHUB_TOKEN }}
