@@ -7,3 +7,5 @@ updates:
     allow:
       - dependency-name: "search-insights"
         dependency-type: "production"
+    commit-message:
+      prefix: "chore"
