@@ -2982,7 +2982,7 @@ __metadata:
     nodemon: "npm:^3.1.0"
     prettier: "npm:3.3.3"
     rimraf: "npm:^6.0.1"
-    search-insights: "npm:2.14.0"
+    search-insights: "npm:2.17.3"
     shelljs: "npm:^0.8.5"
     shipjs: "npm:^0.27.0"
     typescript: "npm:^5.6.3"
@@ -2990,10 +2990,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"search-insights@npm:2.14.0":
-  version: 2.14.0
-  resolution: "search-insights@npm:2.14.0"
-  checksum: 10c0/2b404fa30fbd962e1e4831c595801aa97cac3b00047f2f351f7c3baa7b5d701f0c22f61d3e0de12037273fc8b52abf543a9e82a91303c1a5fa5c05395ceece1a
+"search-insights@npm:2.17.3":
+  version: 2.17.3
+  resolution: "search-insights@npm:2.17.3"
+  checksum: 10c0/e33eb2541e2de97665bfefe80d9633396fc0300cdeac475155a439022561244d294d7878f69c6a395bd4b81eaec4c7d03d72621c1128603d101bb8a3201cd36d
   languageName: node
   linkType: hard
 
