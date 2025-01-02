@@ -14,7 +14,6 @@ module.exports = {
     // update metadata.yaml by executing external script instead of inline because
     // the esm module loader being used by Ship.js is incompatible with the YAML package
     exec(`node scripts/update-metadata.js ${tag}`);
-    exec(`git add metadata.yaml`);
-    exec(`git commit -m "chore: update metadata.yml"`);
+    return `git commit -am "chore: update metadata.yml"`;
   },
 };
