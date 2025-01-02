@@ -1,3 +1,12 @@
+# [1.7.0](https://github.com/algolia/search-insights-gtm/compare/v1.6.6...v1.7.0) (2025-01-02)
+
+
+### Features
+
+* convert to TS and enable versioning directly via package.json ([#44](https://github.com/algolia/search-insights-gtm/issues/44)) ([7715b15](https://github.com/algolia/search-insights-gtm/commit/7715b15bfb402e768223f53898462239d9d3fef0))
+
+
+
 # 1.6.6 (2024-08-02)
 
 - feat: support setting `host` in `init` method ([#41](https://github.com/algolia/search-insights-gtm/pull/41))
