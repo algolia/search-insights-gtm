@@ -246,7 +246,7 @@ switch (data.method) {
       authenticatedUserToken: data.init_authenticatedUserToken,
       userHasOptedOut: data.userHasOptedOut,
       region: data.region,
-      cookieDuration: data.cookieDuration,
+      cookieDuration: makeInteger(data.cookieDuration),
       useCookie: data.useCookie !== false, // true by default
       host: data.host,
     };
