@@ -86,7 +86,7 @@ function transformObjectData(
   objectData?: Array<Record<string, string | number | undefined>>
 ): InsightsEventObjectData[] | undefined {
   if (isNullOrUndefined(objectData)) {
-    return [];
+    return undefined;
   }
 
   if (!isArray(objectData)) {
@@ -150,6 +150,9 @@ function chunkPayload<T extends Record<string, any>>(
   keys: Array<keyof T>,
   limit: number
 ): T[] {
+  // Clean keys being undefined in the payload
+  keys = keys.filter((key) => payload[key] !== undefined);
+
   // check if the values in `payload` for each of `keys` have the same length.
   const sameNumberOfValues = keys
     .map((k) => (payload[k] as any[]).length)
