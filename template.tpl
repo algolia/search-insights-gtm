@@ -904,7 +904,7 @@ function isNullOrUndefined(value) {
 }
 function transformObjectData(objectData) {
   if (isNullOrUndefined(objectData)) {
-    return undefined;
+    return [];
   }
   if (!isArray(objectData)) {
     logger('objectData is not a list', objectData);
