@@ -86,7 +86,7 @@ function transformObjectData(
   objectData?: Array<Record<string, string | number | undefined>>
 ): InsightsEventObjectData[] | undefined {
   if (isNullOrUndefined(objectData)) {
-    return undefined;
+    return [];
   }
 
   if (!isArray(objectData)) {
