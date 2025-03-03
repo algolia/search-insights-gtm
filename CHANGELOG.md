@@ -1,3 +1,12 @@
+## [1.7.1](https://github.com/algolia/search-insights-gtm/compare/v1.7.0...v1.7.1) (2025-03-03)
+
+
+### Bug Fixes
+
+* clean keys that are undefined in payload when chunking ([#60](https://github.com/algolia/search-insights-gtm/issues/60)) ([74e9d77](https://github.com/algolia/search-insights-gtm/commit/74e9d7746fb9493f57a79b30facf1ce1fbf2aed9))
+
+
+
 # [1.7.0](https://github.com/algolia/search-insights-gtm/compare/v1.6.6...v1.7.0) (2025-01-02)
 
 
