@@ -954,6 +954,8 @@ function shallowObjectClone(obj) {
   return newObj;
 }
 function chunkPayload(payload, keys, limit) {
+  // Clean keys being undefined in the payload
+  keys = keys.filter((key) => payload[key] !== undefined);
   // check if the values in `payload` for each of `keys` have the same length.
   const sameNumberOfValues = keys
     .map((k) => payload[k].length)
