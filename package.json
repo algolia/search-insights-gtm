@@ -2,7 +2,7 @@
   "name": "search-insights-gtm",
   "description": "Library for detecting front-end Algolia search metrics",
   "private": true,
-  "version": "1.7.0",
+  "version": "1.7.1",
   "main": "template.tpl",
   "repository": "algolia/search-insights-gtm",
   "author": "Algolia <support@algolia.com>",
