@@ -211,9 +211,7 @@ switch (data.method) {
             aa('getUserToken', null, () => {
               libraryLoaded = true;
             });
-            if (libraryLoaded) {
-              data.gtmOnSuccess();
-            } else {
+            if (!libraryLoaded) {
               log(
                 '[ERROR] Failed to load search-insights.\n\n' +
                   'If your website is using RequireJS, you need to turn on "Use IIFE" option of Initialization method.'
@@ -267,7 +265,7 @@ switch (data.method) {
     }
 
     setInWindow(INSIGHTS_OBJECT_NAME, 'aa');
-
+    data.gtmOnSuccess();
     break;
   }
 
@@ -282,6 +280,7 @@ switch (data.method) {
 
     logger('setAuthenticatedUserToken', token);
     aa('setAuthenticatedUserToken', token);
+    data.gtmOnSuccess();
     break;
   }
 
