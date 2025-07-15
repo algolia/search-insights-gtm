@@ -1,3 +1,12 @@
+## [1.7.2](https://github.com/algolia/search-insights-gtm/compare/v1.7.1...v1.7.2) (2025-07-15)
+
+
+### Bug Fixes
+
+* some methods could be shown as 'still running' in debugger ([#62](https://github.com/algolia/search-insights-gtm/issues/62)) ([c00aa5c](https://github.com/algolia/search-insights-gtm/commit/c00aa5ce67dc58246999099c0008f11fbc770683))
+
+
+
 ## [1.7.1](https://github.com/algolia/search-insights-gtm/compare/v1.7.0...v1.7.1) (2025-03-03)
 
 
