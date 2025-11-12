@@ -3,6 +3,7 @@ import type {
   InsightsEvent,
   Init,
   InsightsEventObjectData,
+  InsightsAdditionalEventParams,
 } from 'search-insights';
 import { devDependencies, version } from '../package.json';
 
@@ -455,8 +456,13 @@ switch (data.method) {
       MAX_OBJECT_IDS
     );
 
+    const additionalParams: InsightsAdditionalEventParams = {};
+    if (data.inferQueryID === true) {
+      additionalParams.inferQueryID = true;
+    }
+
     logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    aa('sendEvents', chunks, additionalParams);
     data.gtmOnSuccess();
     break;
   }

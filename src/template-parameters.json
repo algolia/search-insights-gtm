@@ -616,6 +616,30 @@
             "paramValue": "convertedFilters"
           }
         ]
+      },
+      {
+        "name": "inferQueryID",
+        "displayName": "Infer Query ID",
+        "help": "Set to true to infer the `queryID` from recent searches if not explicitly set.",
+        "simpleValueType": true,
+        "type": "SELECT",
+        "selectItems": [
+          {
+            "displayValue": "True",
+            "value": true
+          },
+          {
+            "displayValue": "False",
+            "value": false
+          }
+        ],
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          }
+        ]
       }
     ]
   }

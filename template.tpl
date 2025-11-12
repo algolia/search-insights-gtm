@@ -643,6 +643,30 @@ ___TEMPLATE_PARAMETERS___
             "paramValue": "convertedFilters"
           }
         ]
+      },
+      {
+        "name": "inferQueryID",
+        "displayName": "Infer Query ID",
+        "help": "Set to true to infer the `queryID` from recent searches if not explicitly set.",
+        "simpleValueType": true,
+        "type": "SELECT",
+        "selectItems": [
+          {
+            "displayValue": "True",
+            "value": true
+          },
+          {
+            "displayValue": "False",
+            "value": false
+          }
+        ],
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          }
+        ]
       }
     ]
   }
@@ -1222,8 +1246,12 @@ switch (data.method) {
       ['objectIDs', 'objectData'],
       MAX_OBJECT_IDS
     );
+    const additionalParams = {};
+    if (data.inferQueryID === true) {
+      additionalParams.inferQueryID = true;
+    }
     logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    aa('sendEvents', chunks, additionalParams);
     data.gtmOnSuccess();
     break;
   }

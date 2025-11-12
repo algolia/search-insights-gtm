@@ -76,6 +76,7 @@ interface GtmDataConvertedObjectIDs extends GtmDataEventWithObjects {
   eventSubtype: GtmEventSubtype;
   currency?: string;
   value?: number | string;
+  inferQueryID: boolean;
 }
 interface GtmDataConvertedFilters extends GtmDataEventWithFilters {
   method: 'convertedFilters';
