@@ -1139,8 +1139,10 @@ switch (data.method) {
       ['objectIDs', 'objectData', 'positions'],
       MAX_OBJECT_IDS
     );
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    chunks.forEach((chunk) => {
+      logger('clickedObjectIDsAfterSearch', chunk);
+      aa('clickedObjectIDsAfterSearch', chunk);
+    });
     data.gtmOnSuccess();
     break;
   }

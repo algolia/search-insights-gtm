@@ -4,6 +4,7 @@ import type {
   Init,
   InsightsEventObjectData,
   InsightsAdditionalEventParams,
+  ClickedObjectIDsAfterSearch
 } from 'search-insights';
 import { devDependencies, version } from '../package.json';
 
@@ -320,7 +321,7 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
+    const payload: Parameters<ClickedObjectIDsAfterSearch>[1] = {
       eventType: 'click',
       eventName: data.eventName,
       index: data.index,
@@ -330,15 +331,19 @@ switch (data.method) {
       queryID: data.queryID,
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
-    };
+    } as any;
+
     const chunks = chunkPayload(
-      payload,
+      payload as any,
       ['objectIDs', 'objectData', 'positions'],
       MAX_OBJECT_IDS
     );
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    chunks.forEach((chunk)=> {
+      logger('clickedObjectIDsAfterSearch', chunk);
+      aa('clickedObjectIDsAfterSearch', chunk);
+    });
+    
     data.gtmOnSuccess();
     break;
   }
