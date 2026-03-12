@@ -532,6 +532,26 @@
         ]
       },
       {
+        "displayName": "Infer Query ID",
+        "name": "inferQueryID",
+        "help": "When enabled, the search-insights library will attempt to look up the queryID from its internal cache instead of requiring it to be passed explicitly.",
+        "type": "CHECKBOX",
+        "simpleValueType": true,
+        "defaultValue": false,
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          }
+        ]
+      },
+      {
         "displayName": "Positions",
         "name": "positions",
         "help": "The list of the absolute positions of the element that was clicked (1-based and _not_ 0-based). They must be separated by commas and limited to 20.",
