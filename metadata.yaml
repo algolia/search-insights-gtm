@@ -1,6 +1,8 @@
 homepage: https://www.algolia.com
 documentation: https://github.com/algolia/search-insights-gtm
 versions:
+  - sha: 8a9bc249b800bdc8176c4dbbc04a21c6297676d2
+    changeNotes: "chore: update version to latest"
   - sha: 5f2ff3a21159908853c0d8de10eadd8de8a6cbac
     changeNotes: "chore: update version to latest"
   - sha: 62597a80ad70684fcd0bfbe43d2a69a73b447986
