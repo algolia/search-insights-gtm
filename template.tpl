@@ -1075,7 +1075,7 @@ switch (data.method) {
     };
     logger(data.method, initOptions);
     aa(data.method, initOptions);
-    const userAgent = 'insights-gtm (1.7.3)';
+    const userAgent = 'insights-gtm (1.8.0)';
     logger('addAlgoliaAgent', userAgent);
     aa('addAlgoliaAgent', userAgent);
     if (data.initialUserToken) {
