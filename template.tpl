@@ -559,6 +559,26 @@ ___TEMPLATE_PARAMETERS___
         ]
       },
       {
+        "displayName": "Infer Query ID",
+        "name": "inferQueryID",
+        "help": "When enabled, the search-insights library will attempt to look up the queryID from its internal cache instead of requiring it to be passed explicitly.",
+        "type": "CHECKBOX",
+        "simpleValueType": true,
+        "defaultValue": false,
+        "enablingConditions": [
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDs"
+          },
+          {
+            "paramName": "method",
+            "type": "EQUALS",
+            "paramValue": "convertedObjectIDsAfterSearch"
+          }
+        ]
+      },
+      {
         "displayName": "Positions",
         "name": "positions",
         "help": "The list of the absolute positions of the element that was clicked (1-based and _not_ 0-based). They must be separated by commas and limited to 20.",
@@ -936,6 +956,16 @@ function transformObjectData(objectData) {
     return od;
   });
 }
+function getConvertedObjectIDsAfterSearchMethod(subtype) {
+  if (subtype === 'addToCart') return 'addedToCartObjectIDsAfterSearch';
+  if (subtype === 'purchase') return 'purchasedObjectIDsAfterSearch';
+  return 'convertedObjectIDsAfterSearch';
+}
+function getConvertedObjectIDsMethod(subtype) {
+  if (subtype === 'addToCart') return 'addedToCartObjectIDs';
+  if (subtype === 'purchase') return 'purchasedObjectIDs';
+  return 'convertedObjectIDs';
+}
 function getLibraryURL(useIIFE) {
   return (
     INSIGHTS_LIBRARY_URL +
@@ -1075,21 +1105,15 @@ switch (data.method) {
       break;
     }
     const payload = {
-      eventType: 'view',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
-      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
     };
-    const chunks = chunkPayload(
-      payload,
-      ['objectIDs', 'objectData'],
-      MAX_OBJECT_IDS
-    );
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
+    logger('viewedObjectIDs', chunks);
+    chunks.forEach((chunk) => aa('viewedObjectIDs', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -1100,11 +1124,9 @@ switch (data.method) {
       break;
     }
     const payload = {
-      eventType: 'click',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
-      objectData: transformObjectData(data.objectData),
       positions: formatValueToList(data.positions).map(makeInteger),
       queryID: data.queryID,
       userToken: data.userToken,
@@ -1112,11 +1134,11 @@ switch (data.method) {
     };
     const chunks = chunkPayload(
       payload,
-      ['objectIDs', 'objectData', 'positions'],
+      ['objectIDs', 'positions'],
       MAX_OBJECT_IDS
     );
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('clickedObjectIDsAfterSearch', chunks);
+    chunks.forEach((chunk) => aa('clickedObjectIDsAfterSearch', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -1127,22 +1149,15 @@ switch (data.method) {
       break;
     }
     const payload = {
-      eventType: 'click',
       eventName: data.eventName,
       index: data.index,
-      queryID: data.queryID,
       objectIDs: formatValueToList(data.objectIDs),
-      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
     };
-    const chunks = chunkPayload(
-      payload,
-      ['objectIDs', 'objectData'],
-      MAX_OBJECT_IDS
-    );
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
+    logger('clickedObjectIDs', chunks);
+    chunks.forEach((chunk) => aa('clickedObjectIDs', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -1153,7 +1168,6 @@ switch (data.method) {
       break;
     }
     const payload = {
-      eventType: 'click',
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
@@ -1161,8 +1175,8 @@ switch (data.method) {
       authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('clickedFilters', chunks);
+    chunks.forEach((chunk) => aa('clickedFilters', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -1172,8 +1186,10 @@ switch (data.method) {
       data.gtmOnFailure();
       break;
     }
+    const methodName = getConvertedObjectIDsAfterSearchMethod(
+      data.eventSubtype
+    );
     const payload = {
-      eventType: 'conversion',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -1184,16 +1200,14 @@ switch (data.method) {
       value: data.value,
       currency: data.currency,
     };
-    if (data.eventSubtype) {
-      payload.eventSubtype = data.eventSubtype;
-    }
     const chunks = chunkPayload(
       payload,
       ['objectIDs', 'objectData'],
       MAX_OBJECT_IDS
     );
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger(methodName, chunks);
+    const additionalParams = data.inferQueryID ? { inferQueryID: true } : {};
+    chunks.forEach((chunk) => aa(methodName, chunk, additionalParams));
     data.gtmOnSuccess();
     break;
   }
@@ -1203,8 +1217,8 @@ switch (data.method) {
       data.gtmOnFailure();
       break;
     }
+    const methodName = getConvertedObjectIDsMethod(data.eventSubtype);
     const payload = {
-      eventType: 'conversion',
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -1214,16 +1228,14 @@ switch (data.method) {
       value: data.value,
       currency: data.currency,
     };
-    if (data.eventSubtype) {
-      payload.eventSubtype = data.eventSubtype;
-    }
     const chunks = chunkPayload(
       payload,
       ['objectIDs', 'objectData'],
       MAX_OBJECT_IDS
     );
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger(methodName, chunks);
+    const additionalParams = data.inferQueryID ? { inferQueryID: true } : {};
+    chunks.forEach((chunk) => aa(methodName, chunk, additionalParams));
     data.gtmOnSuccess();
     break;
   }
@@ -1234,21 +1246,15 @@ switch (data.method) {
       break;
     }
     const payload = {
-      eventType: 'conversion',
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
-      value: data.value,
-      currency: data.currency,
     };
-    if (data.eventSubtype) {
-      payload.eventSubtype = data.eventSubtype;
-    }
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('convertedFilters', chunks);
+    chunks.forEach((chunk) => aa('convertedFilters', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -1259,7 +1265,6 @@ switch (data.method) {
       break;
     }
     const payload = {
-      eventType: 'view',
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
@@ -1267,8 +1272,8 @@ switch (data.method) {
       authenticatedUserToken: data.authenticatedUserToken,
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('viewedFilters', chunks);
+    chunks.forEach((chunk) => aa('viewedFilters', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -1290,9 +1295,7 @@ scenarios:
       method: 'clickedObjectIDs',
       eventName: 'click',
       index: 'my-index',
-      queryID: 'my-query-id',
       objectIDs: 'foo,bar,baz',
-      objectData: [],
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
     };
@@ -1301,16 +1304,13 @@ scenarios:
 
     const aa = copyFromWindow('aa');
 
-    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['sendEvents', [{
-      eventType: 'click',
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedObjectIDs', {
       eventName: 'click',
       index: 'my-index',
-      queryID: 'my-query-id',
       objectIDs: ['foo','bar','baz'],
-      objectData: [],
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
-    }]]);
+    }]);
 - name: objectIds handles multiple ids that contain commas
   code: |-
     const copyFromWindow = require('copyFromWindow');
@@ -1319,9 +1319,7 @@ scenarios:
       method: 'clickedObjectIDs',
       eventName: 'click',
       index: 'my-index',
-      queryID: 'my-query-id',
       objectIDs: 'foo\\,bar,ba\\z,with\\,multiple\\,commas',
-      objectData: [],
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
     };
@@ -1330,16 +1328,353 @@ scenarios:
 
     const aa = copyFromWindow('aa');
 
-    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['sendEvents', [{
-      eventType: 'click',
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedObjectIDs', {
+      eventName: 'click',
+      index: 'my-index',
+      objectIDs: ['foo,bar','ba\\z', 'with,multiple,commas'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: clickedObjectIDsAfterSearch includes queryID and positions
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'clickedObjectIDsAfterSearch',
       eventName: 'click',
       index: 'my-index',
       queryID: 'my-query-id',
-      objectIDs: ['foo,bar','ba\\z', 'with,multiple,commas'],
-      objectData: [],
+      objectIDs: 'obj1,obj2',
+      positions: '1,3',
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
-    }]]);
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedObjectIDsAfterSearch', {
+      eventName: 'click',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1','obj2'],
+      positions: [1, 3],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: viewedObjectIDs sends view event
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'viewedObjectIDs',
+      eventName: 'view',
+      index: 'my-index',
+      objectIDs: 'obj1,obj2,obj3',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['viewedObjectIDs', {
+      eventName: 'view',
+      index: 'my-index',
+      objectIDs: ['obj1','obj2','obj3'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: clickedFilters sends filters as list
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'clickedFilters',
+      eventName: 'click',
+      index: 'my-index',
+      filters: 'brand:Apple,color:Red',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedFilters', {
+      eventName: 'click',
+      index: 'my-index',
+      filters: ['brand:Apple','color:Red'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: convertedObjectIDsAfterSearch with addToCart subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: 'addToCart',
+      eventName: 'add to cart',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['addedToCartObjectIDsAfterSearch', {
+      eventName: 'add to cart',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    }, {}]);
+- name: convertedObjectIDsAfterSearch with purchase subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: 'purchase',
+      eventName: 'purchase',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['purchasedObjectIDsAfterSearch', {
+      eventName: 'purchase',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    }, {}]);
+- name: fails when not initialized
+  code: |-
+    const mockData = {
+      method: 'clickedObjectIDs',
+      eventName: 'click',
+      index: 'my-index',
+      objectIDs: 'obj1'
+    };
+
+    mock('copyFromWindow', function(key) {
+      if (key === 'AlgoliaAnalyticsObject') return undefined;
+      return undefined;
+    });
+
+    runCode(mockData);
+
+    assertApi('gtmOnFailure').wasCalled();
+- name: viewedFilters sends filters as list
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'viewedFilters',
+      eventName: 'view',
+      index: 'my-index',
+      filters: 'brand:Apple,color:Red',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['viewedFilters', {
+      eventName: 'view',
+      index: 'my-index',
+      filters: ['brand:Apple','color:Red'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: convertedFilters sends filters as list
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedFilters',
+      eventName: 'conversion',
+      index: 'my-index',
+      filters: 'brand:Apple',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['convertedFilters', {
+      eventName: 'conversion',
+      index: 'my-index',
+      filters: ['brand:Apple'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: convertedObjectIDsAfterSearch with default subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: '',
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['convertedObjectIDsAfterSearch', {
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: undefined,
+      currency: undefined
+    }, {}]);
+- name: convertedObjectIDs with addToCart subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDs',
+      eventSubtype: 'addToCart',
+      eventName: 'add to cart',
+      index: 'my-index',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['addedToCartObjectIDs', {
+      eventName: 'add to cart',
+      index: 'my-index',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    }, {}]);
+- name: convertedObjectIDs with purchase subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDs',
+      eventSubtype: 'purchase',
+      eventName: 'purchase',
+      index: 'my-index',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['purchasedObjectIDs', {
+      eventName: 'purchase',
+      index: 'my-index',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    }, {}]);
+- name: convertedObjectIDsAfterSearch passes inferQueryID
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: '',
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      inferQueryID: true
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['convertedObjectIDsAfterSearch', {
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: undefined,
+      currency: undefined
+    }, { inferQueryID: true }]);
+- name: setAuthenticatedUserToken sends token
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'setAuthenticatedUserToken',
+      setAuthenticatedUserToken_token: 'my-auth-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['setAuthenticatedUserToken', 'my-auth-token']);
 setup: |-
   const setInWindow = require('setInWindow');
 

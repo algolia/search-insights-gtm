@@ -7,9 +7,7 @@ scenarios:
       method: 'clickedObjectIDs',
       eventName: 'click',
       index: 'my-index',
-      queryID: 'my-query-id',
       objectIDs: 'foo,bar,baz',
-      objectData: [],
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
     };
@@ -18,16 +16,13 @@ scenarios:
 
     const aa = copyFromWindow('aa');
 
-    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['sendEvents', [{
-      eventType: 'click',
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedObjectIDs', {
       eventName: 'click',
       index: 'my-index',
-      queryID: 'my-query-id',
       objectIDs: ['foo','bar','baz'],
-      objectData: [],
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
-    }]]);
+    }]);
 - name: objectIds handles multiple ids that contain commas
   code: |-
     const copyFromWindow = require('copyFromWindow');
@@ -36,9 +31,7 @@ scenarios:
       method: 'clickedObjectIDs',
       eventName: 'click',
       index: 'my-index',
-      queryID: 'my-query-id',
       objectIDs: 'foo\\,bar,ba\\z,with\\,multiple\\,commas',
-      objectData: [],
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
     };
@@ -47,16 +40,353 @@ scenarios:
 
     const aa = copyFromWindow('aa');
 
-    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['sendEvents', [{
-      eventType: 'click',
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedObjectIDs', {
+      eventName: 'click',
+      index: 'my-index',
+      objectIDs: ['foo,bar','ba\\z', 'with,multiple,commas'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: clickedObjectIDsAfterSearch includes queryID and positions
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'clickedObjectIDsAfterSearch',
       eventName: 'click',
       index: 'my-index',
       queryID: 'my-query-id',
-      objectIDs: ['foo,bar','ba\\z', 'with,multiple,commas'],
-      objectData: [],
+      objectIDs: 'obj1,obj2',
+      positions: '1,3',
       userToken: 'my-user-token',
       authenticatedUserToken: 'my-authenticated-user-token'
-    }]]);
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedObjectIDsAfterSearch', {
+      eventName: 'click',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1','obj2'],
+      positions: [1, 3],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: viewedObjectIDs sends view event
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'viewedObjectIDs',
+      eventName: 'view',
+      index: 'my-index',
+      objectIDs: 'obj1,obj2,obj3',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['viewedObjectIDs', {
+      eventName: 'view',
+      index: 'my-index',
+      objectIDs: ['obj1','obj2','obj3'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: clickedFilters sends filters as list
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'clickedFilters',
+      eventName: 'click',
+      index: 'my-index',
+      filters: 'brand:Apple,color:Red',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['clickedFilters', {
+      eventName: 'click',
+      index: 'my-index',
+      filters: ['brand:Apple','color:Red'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: convertedObjectIDsAfterSearch with addToCart subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: 'addToCart',
+      eventName: 'add to cart',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['addedToCartObjectIDsAfterSearch', {
+      eventName: 'add to cart',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    }, {}]);
+- name: convertedObjectIDsAfterSearch with purchase subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: 'purchase',
+      eventName: 'purchase',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['purchasedObjectIDsAfterSearch', {
+      eventName: 'purchase',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    }, {}]);
+- name: fails when not initialized
+  code: |-
+    const mockData = {
+      method: 'clickedObjectIDs',
+      eventName: 'click',
+      index: 'my-index',
+      objectIDs: 'obj1'
+    };
+
+    mock('copyFromWindow', function(key) {
+      if (key === 'AlgoliaAnalyticsObject') return undefined;
+      return undefined;
+    });
+
+    runCode(mockData);
+
+    assertApi('gtmOnFailure').wasCalled();
+- name: viewedFilters sends filters as list
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'viewedFilters',
+      eventName: 'view',
+      index: 'my-index',
+      filters: 'brand:Apple,color:Red',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['viewedFilters', {
+      eventName: 'view',
+      index: 'my-index',
+      filters: ['brand:Apple','color:Red'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: convertedFilters sends filters as list
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedFilters',
+      eventName: 'conversion',
+      index: 'my-index',
+      filters: 'brand:Apple',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['convertedFilters', {
+      eventName: 'conversion',
+      index: 'my-index',
+      filters: ['brand:Apple'],
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    }]);
+- name: convertedObjectIDsAfterSearch with default subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: '',
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['convertedObjectIDsAfterSearch', {
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: undefined,
+      currency: undefined
+    }, {}]);
+- name: convertedObjectIDs with addToCart subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDs',
+      eventSubtype: 'addToCart',
+      eventName: 'add to cart',
+      index: 'my-index',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['addedToCartObjectIDs', {
+      eventName: 'add to cart',
+      index: 'my-index',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '19.99',
+      currency: 'USD'
+    }, {}]);
+- name: convertedObjectIDs with purchase subtype
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDs',
+      eventSubtype: 'purchase',
+      eventName: 'purchase',
+      index: 'my-index',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['purchasedObjectIDs', {
+      eventName: 'purchase',
+      index: 'my-index',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: '99.99',
+      currency: 'EUR'
+    }, {}]);
+- name: convertedObjectIDsAfterSearch passes inferQueryID
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'convertedObjectIDsAfterSearch',
+      eventSubtype: '',
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: 'obj1',
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      inferQueryID: true
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['convertedObjectIDsAfterSearch', {
+      eventName: 'conversion',
+      index: 'my-index',
+      queryID: 'my-query-id',
+      objectIDs: ['obj1'],
+      objectData: undefined,
+      userToken: 'my-user-token',
+      authenticatedUserToken: 'my-authenticated-user-token',
+      value: undefined,
+      currency: undefined
+    }, { inferQueryID: true }]);
+- name: setAuthenticatedUserToken sends token
+  code: |-
+    const copyFromWindow = require('copyFromWindow');
+
+    const mockData = {
+      method: 'setAuthenticatedUserToken',
+      setAuthenticatedUserToken_token: 'my-auth-token'
+    };
+
+    runCode(mockData);
+
+    const aa = copyFromWindow('aa');
+
+    assertThat(aa.queue[aa.queue.length-1]).isEqualTo(['setAuthenticatedUserToken', 'my-auth-token']);
 setup: |-
   const setInWindow = require('setInWindow');
 

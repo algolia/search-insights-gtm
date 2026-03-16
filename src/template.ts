@@ -1,9 +1,23 @@
 import type {
   InsightsClient,
-  InsightsEvent,
   Init,
   InsightsEventObjectData,
+  InsightsAdditionalEventParams,
 } from 'search-insights';
+import type {
+  InsightsSearchClickEvent,
+  InsightsClickObjectIDsEvent,
+  InsightsClickFiltersEvent,
+} from '../node_modules/search-insights/dist/click';
+import type {
+  InsightsSearchConversionEvent,
+  InsightsSearchConversionObjectIDsEvent,
+  InsightsSearchConversionFiltersEvent,
+} from '../node_modules/search-insights/dist/conversion';
+import type {
+  InsightsSearchViewObjectIDsEvent,
+  InsightsSearchViewFiltersEvent,
+} from '../node_modules/search-insights/dist/view';
 import { devDependencies, version } from '../package.json';
 
 const log = require('logToConsole');
@@ -123,6 +137,18 @@ function transformObjectData(
 
     return od;
   });
+}
+
+function getConvertedObjectIDsAfterSearchMethod(subtype: GtmEventSubtype) {
+  if (subtype === 'addToCart') return 'addedToCartObjectIDsAfterSearch';
+  if (subtype === 'purchase') return 'purchasedObjectIDsAfterSearch';
+  return 'convertedObjectIDsAfterSearch';
+}
+
+function getConvertedObjectIDsMethod(subtype: GtmEventSubtype) {
+  if (subtype === 'addToCart') return 'addedToCartObjectIDs';
+  if (subtype === 'purchase') return 'purchasedObjectIDs';
+  return 'convertedObjectIDs';
 }
 
 function getLibraryURL(useIIFE: boolean) {
@@ -291,23 +317,17 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'view',
+    const payload: InsightsSearchViewObjectIDsEvent = {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
-      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
     };
-    const chunks = chunkPayload(
-      payload,
-      ['objectIDs', 'objectData'],
-      MAX_OBJECT_IDS
-    );
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('viewedObjectIDs', chunks);
+    chunks.forEach((chunk) => aa('viewedObjectIDs', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -319,12 +339,10 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'click',
+    const payload: InsightsSearchClickEvent = {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
-      objectData: transformObjectData(data.objectData),
       positions: formatValueToList(data.positions).map(makeInteger),
       queryID: data.queryID,
       userToken: data.userToken,
@@ -332,12 +350,12 @@ switch (data.method) {
     };
     const chunks = chunkPayload(
       payload,
-      ['objectIDs', 'objectData', 'positions'],
+      ['objectIDs', 'positions'],
       MAX_OBJECT_IDS
     );
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('clickedObjectIDsAfterSearch', chunks);
+    chunks.forEach((chunk) => aa('clickedObjectIDsAfterSearch', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -349,24 +367,17 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'click',
+    const payload: InsightsClickObjectIDsEvent = {
       eventName: data.eventName,
       index: data.index,
-      queryID: data.queryID,
       objectIDs: formatValueToList(data.objectIDs),
-      objectData: transformObjectData(data.objectData),
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
     };
-    const chunks = chunkPayload(
-      payload,
-      ['objectIDs', 'objectData'],
-      MAX_OBJECT_IDS
-    );
+    const chunks = chunkPayload(payload, ['objectIDs'], MAX_OBJECT_IDS);
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('clickedObjectIDs', chunks);
+    chunks.forEach((chunk) => aa('clickedObjectIDs', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -378,8 +389,7 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'click',
+    const payload: InsightsClickFiltersEvent = {
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
@@ -388,8 +398,8 @@ switch (data.method) {
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('clickedFilters', chunks);
+    chunks.forEach((chunk) => aa('clickedFilters', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -401,8 +411,9 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'conversion',
+    const methodName = getConvertedObjectIDsAfterSearchMethod(data.eventSubtype);
+
+    const payload: InsightsSearchConversionEvent = {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -413,17 +424,17 @@ switch (data.method) {
       value: data.value,
       currency: data.currency,
     };
-    if (data.eventSubtype) {
-      payload.eventSubtype = data.eventSubtype;
-    }
     const chunks = chunkPayload(
       payload,
       ['objectIDs', 'objectData'],
       MAX_OBJECT_IDS
     );
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger(methodName, chunks);
+    const additionalParams: InsightsAdditionalEventParams = data.inferQueryID
+      ? { inferQueryID: true }
+      : {};
+    chunks.forEach((chunk) => aa(methodName, chunk, additionalParams));
     data.gtmOnSuccess();
     break;
   }
@@ -435,8 +446,9 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'conversion',
+    const methodName = getConvertedObjectIDsMethod(data.eventSubtype);
+
+    const payload: InsightsSearchConversionObjectIDsEvent = {
       eventName: data.eventName,
       index: data.index,
       objectIDs: formatValueToList(data.objectIDs),
@@ -446,17 +458,17 @@ switch (data.method) {
       value: data.value,
       currency: data.currency,
     };
-    if (data.eventSubtype) {
-      payload.eventSubtype = data.eventSubtype;
-    }
     const chunks = chunkPayload(
       payload,
       ['objectIDs', 'objectData'],
       MAX_OBJECT_IDS
     );
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger(methodName, chunks);
+    const additionalParams: InsightsAdditionalEventParams = data.inferQueryID
+      ? { inferQueryID: true }
+      : {};
+    chunks.forEach((chunk) => aa(methodName, chunk, additionalParams));
     data.gtmOnSuccess();
     break;
   }
@@ -468,23 +480,17 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'conversion',
+    const payload: InsightsSearchConversionFiltersEvent = {
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
       userToken: data.userToken,
       authenticatedUserToken: data.authenticatedUserToken,
-      value: data.value,
-      currency: data.currency,
     };
-    if (data.eventSubtype) {
-      payload.eventSubtype = data.eventSubtype;
-    }
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('convertedFilters', chunks);
+    chunks.forEach((chunk) => aa('convertedFilters', chunk));
     data.gtmOnSuccess();
     break;
   }
@@ -496,8 +502,7 @@ switch (data.method) {
       break;
     }
 
-    const payload: InsightsEvent = {
-      eventType: 'view',
+    const payload: InsightsSearchViewFiltersEvent = {
       eventName: data.eventName,
       filters: formatValueToList(data.filters),
       index: data.index,
@@ -506,8 +511,8 @@ switch (data.method) {
     };
     const chunks = chunkPayload(payload, ['filters'], MAX_FILTERS);
 
-    logger('sendEvents', chunks);
-    aa('sendEvents', chunks);
+    logger('viewedFilters', chunks);
+    chunks.forEach((chunk) => aa('viewedFilters', chunk));
     data.gtmOnSuccess();
     break;
   }
