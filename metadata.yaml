@@ -2,15 +2,15 @@ homepage: https://www.algolia.com
 documentation: https://github.com/algolia/search-insights-gtm
 versions:
   - sha: 8a9bc249b800bdc8176c4dbbc04a21c6297676d2
-    changeNotes: "chore: update version to latest"
+    changeNotes: "chore: update version to 1.8.0"
   - sha: 5f2ff3a21159908853c0d8de10eadd8de8a6cbac
-    changeNotes: "chore: update version to latest"
+    changeNotes: "chore: update version to 1.7.3"
   - sha: 62597a80ad70684fcd0bfbe43d2a69a73b447986
-    changeNotes: "chore: update version to latest"
+    changeNotes: "chore: update version to 1.7.2"
   - sha: bf5bc8ccdbd1459508d19330af772c9fa413e519
-    changeNotes: "chore: update version to latest"
+    changeNotes: "chore: update version to 1.7.1"
   - sha: e1b38a5988dcb3a22b0154f26f1397fb9ad839e0
-    changeNotes: "chore: update version to latest"
+    changeNotes: "chore: update version to 1.7.0"
   - sha: 4e8c7ee78328514c3a5f4e66061c4642b6abb343
     changeNotes: "chore: update version to 1.6.6"
   - sha: 1b6f15e09482a536ff72ff512fc368903d4feb25
@@ -31,13 +31,13 @@ versions:
   - sha: dbe70546723fb556fd71178e02db5e681ca3fb13
     changeNotes: "fix: update logo (#17)"
   - sha: 68b3e1a8eb9b18f9be53dd972bb80db260dd5daf
-    changeNotes: "chore: update version to v1.4.0"
+    changeNotes: "chore: update version to 1.4.0"
   - sha: a294bc5d5c73b9b397b60d59725a0469168669bd
-    changeNotes: "chore: update version to v1.3.1"
+    changeNotes: "chore: update version to 1.3.1"
   - sha: 7104e0b191dd1fef9e144303815e11f5abef08aa
-    changeNotes: "chore: update version to v1.3.0"
+    changeNotes: "chore: update version to 1.3.0"
   - sha: ae7d017b482c99e3736bb3a55d216ddfbd7ad3bf
-    changeNotes: "chore: update version to v1.2.1"
+    changeNotes: "chore: update version to 1.2.1"
   - sha: faa43f692e46efd005a726ea68b184620a81d37d
     changeNotes: upgrade search-insights and remove validations
   - sha: 0608f26267dae35a6fcc2186d62816928c3563b0
